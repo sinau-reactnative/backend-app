@@ -10,10 +10,16 @@ const app = express();
 const PORT = process.env.PORT || 3030;
 const upload = multer();
 
+const db = require("./configs/db");
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet({ noCache: true }));
 app.use(upload.array("images", 4));
+
+setInterval(() => {
+  db.query("SELECT 1");
+}, 60 * 30);
 
 app.listen(PORT, () => `Server Running at PORT => ${PORT}`);
