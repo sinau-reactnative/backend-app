@@ -16,4 +16,8 @@ db.connect(err => {
   }
 });
 
+setInterval(() => {
+  db.query("SELECT 1");
+}, 60 * 15);
+
 module.exports = db;
