@@ -11,7 +11,7 @@ const PORT = Number(process.env.PORT) || 3030;
 const upload = multer();
 
 // Sync database, only uncomment when the app first running at your machine
-// require("./configs/sync");
+// require("./helpers/sync");
 
 app.use(cors());
 app.use(bodyParser.json());
