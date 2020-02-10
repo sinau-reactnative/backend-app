@@ -7,8 +7,11 @@ const helmet = require("helmet");
 const multer = require("multer");
 
 const app = express();
-const PORT = process.env.PORT || 3030;
+const PORT = Number(process.env.PORT) || 3030;
 const upload = multer();
+
+// Sync database, only uncomment when the app first running at your machine
+// require("./configs/sync");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,4 +23,6 @@ app.get("/", (req, res) => {
   res.status(200).json({ err: false, msg: "Hello World" });
 });
 
-app.listen(PORT, () => `Server Running at PORT => ${PORT}`);
+app.listen(PORT, () =>
+  console.log(`Server running at http://localhost:${PORT}`)
+);
