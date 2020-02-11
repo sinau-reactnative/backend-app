@@ -1,3 +1,4 @@
+const jwt = require("jsonwebtoken");
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
 const { encrypt, decrypt } = require("../helpers/encryption");
@@ -5,6 +6,7 @@ const { encrypt, decrypt } = require("../helpers/encryption");
 module.exports = {
   signup: (req, res) => {
     const { fullname, email, username, role, address } = req.body;
+    const creatorRole = req.user[0].role;
     const password = encrypt(req.body.password);
     const sql = `
         INSERT INTO users VALUES (
@@ -20,6 +22,12 @@ module.exports = {
         );`;
 
     try {
+      if (creatorRole !== "superadmin") {
+        return sendResponse(res, 500, {
+          response: `you're_not_allowed_to_do_this_action`
+        });
+      }
+
       db.query(
         sql,
         [fullname, email, username, password, role, address],
@@ -27,7 +35,7 @@ module.exports = {
           if (err) {
             sendResponse(res, 500, { response: "error_when_make_user", err });
           } else {
-            sendResponse(res, 200, result.insertId);
+            sendResponse(res, 200, { id: result.insertId });
           }
         }
       );
@@ -49,7 +57,20 @@ module.exports = {
         } else {
           const decryptedPassword = decrypt(result[0].password);
           if (password === decryptedPassword) {
-            sendResponse(res, 200, result);
+            const token = jwt.sign(
+              {
+                id: result[0].id,
+                email: result[0].email,
+                role: result[0].role
+              },
+              process.env.JWT_SECRET,
+              { expiresIn: "7d" }
+            );
+            sendResponse(res, 200, {
+              message: "You're logged in",
+              token,
+              user: result[0]
+            });
           } else {
             sendResponse(res, 500, { response: "check_your_password", err });
           }

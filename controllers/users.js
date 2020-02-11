@@ -22,8 +22,9 @@ module.exports = {
   },
 
   getUserById: (req, res) => {
-    const { id } = req.params.id;
-    const sql = `DELETE FROM users WHERE id = ?`;
+    const { id } = req.params;
+    console.log(id);
+    const sql = `SELECT * FROM users WHERE id= ?;`;
 
     try {
       db.query(sql, [id], (err, result) => {
@@ -42,7 +43,7 @@ module.exports = {
     const { id } = req.params;
     const { fullname, email, username, address, role } = req.body;
     const sql = `
-        UPDATE user
+        UPDATE users
         SET fullname = ?,
             email = ?,
             username = ?,
@@ -54,7 +55,7 @@ module.exports = {
     try {
       db.query(
         sql,
-        [fullname, email, address, username, role, id],
+        [fullname, email, username, address, role, id],
         (err, result) => {
           if (err) {
             sendResponse(res, 500, err);
@@ -65,6 +66,23 @@ module.exports = {
           }
         }
       );
+    } catch (error) {
+      sendResponse(res, 500, error);
+    }
+  },
+
+  deleteUserById: (req, res) => {
+    const { id } = req.params;
+    const sql = `DELETE FROM users WHERE id = ?`;
+
+    try {
+      db.query(sql, [id], (err, result) => {
+        if (err) {
+          sendResponse(res, 500, err);
+        } else {
+          sendResponse(res, 200, result);
+        }
+      });
     } catch (error) {
       sendResponse(res, 500, error);
     }
