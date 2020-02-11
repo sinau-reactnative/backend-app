@@ -1,6 +1,6 @@
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
-const { encrypt, decrypt } = require("../helpers/encryption");
+// const { encrypt, decrypt } = require("../helpers/encryption");
 
 module.exports = {
   getAllUser: (req, res) => {
@@ -22,7 +22,7 @@ module.exports = {
     const { id } = req.params.id;
     const sql = `DELETE FROM users WHERE id = ?`;
 
-    db.query(sql, [], (err, result) => {
+    db.query(sql, [id], (err, result) => {
       if (err) {
         throw err;
       } else {

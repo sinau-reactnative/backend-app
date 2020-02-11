@@ -34,12 +34,12 @@ INSERT INTO users VALUES (
 );
 `;
 
-db.query(queryCreateTable, (err, result) => {
+db.query(queryCreateTable, err => {
   if (err) {
     throw err;
   } else {
     console.log("New Table User has been created");
-    return db.query(firstUserCreated, (err, result) => {
+    return db.query(firstUserCreated, err => {
       if (err) throw err;
       else console.log("New User has been created");
     });
