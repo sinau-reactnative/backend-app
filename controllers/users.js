@@ -1,6 +1,5 @@
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
-// const { encrypt, decrypt } = require("../helpers/encryption");
 
 module.exports = {
   getAllUser: (req, res) => {
@@ -9,52 +8,65 @@ module.exports = {
     role ? (sql += `WHERE role = ?`) : null;
     sql += `ORDER BY updated_at DESC LIMIT 10 OFFSET 0`;
 
-    db.query(sql, role ? [role] : [], (err, result) => {
-      if (err) {
-        throw err;
-      } else {
-        sendResponse(res, 200, result);
-      }
-    });
+    try {
+      db.query(sql, role ? [role] : [], (err, result) => {
+        if (err) {
+          sendResponse(res, 500, err);
+        } else {
+          sendResponse(res, 200, result);
+        }
+      });
+    } catch (error) {
+      sendResponse(res, 500, error);
+    }
   },
 
   getUserById: (req, res) => {
     const { id } = req.params.id;
     const sql = `DELETE FROM users WHERE id = ?`;
 
-    db.query(sql, [id], (err, result) => {
-      if (err) {
-        throw err;
-      } else {
-        sendResponse(res, 200, result);
-      }
-    });
+    try {
+      db.query(sql, [id], (err, result) => {
+        if (err) {
+          sendResponse(res, 500, err);
+        } else {
+          sendResponse(res, 200, result);
+        }
+      });
+    } catch (error) {
+      sendResponse(res, 500, error);
+    }
   },
 
   updateUser: (req, res) => {
     const { id } = req.params;
-    const { first_name, last_name, email, username, avatar, role } = req.body;
+    const { fullname, email, username, address, role } = req.body;
     const sql = `
         UPDATE user
-        SET first_name = ?,
-            last_name = ?,
+        SET fullname = ?,
             email = ?,
             username = ?,
-            avatar = ?,
+            address = ?,
             role = ?
         WHERE id = ?
     ;`;
 
-    db.query(
-      sql,
-      [first_name, last_name, email, username, avatar, role, id],
-      (err, result) => {
-        if (err) {
-          throw err;
-        } else {
-          sendResponse(res, 200, { msg: `data has been updated => ${result}` });
+    try {
+      db.query(
+        sql,
+        [fullname, email, address, username, role, id],
+        (err, result) => {
+          if (err) {
+            sendResponse(res, 500, err);
+          } else {
+            sendResponse(res, 200, {
+              msg: `data has been updated => ${result}`
+            });
+          }
         }
-      }
-    );
+      );
+    } catch (error) {
+      sendResponse(res, 500, error);
+    }
   }
 };

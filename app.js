@@ -12,6 +12,7 @@ const upload = multer();
 
 // Import Route
 const userRoute = require("./routes/users");
+const authRoute = require("./routes/auth");
 
 // Sync database, only uncomment when the app first running at your machine
 // require("./helpers/sync");
@@ -26,7 +27,8 @@ app.get("/", (req, res) => {
   res.status(200).json({ err: false, msg: "Hello World" });
 });
 
-app.use("/api/v1.0/user", userRoute);
+app.use("/api/v1/users", userRoute);
+app.use("/api/v1/auth", authRoute);
 
 app.listen(PORT, () =>
   console.log(`Server running at http://localhost:${PORT}`)
