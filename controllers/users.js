@@ -23,7 +23,6 @@ module.exports = {
 
   getUserById: (req, res) => {
     const { id } = req.params;
-    console.log(id);
     const sql = `SELECT * FROM users WHERE id= ?;`;
 
     try {
