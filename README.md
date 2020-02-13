@@ -1,5 +1,12 @@
 # Backend App
 
+## Step by Step
+
+1. Clone repo and install dependencies
+2. Make sure you already install mysql and setting up the .env ( the format is like .env.default )
+3. Create database, name is up to you and don't forget to setting up in .env file in app.js if you run that in the first time you need to uncomment the sync func. ( sync is to make firstuser to signin, feel free to remake that )
+4. And you can check the endpoint and play around
+
 ## /api/v1/auth
 
 | Endpoint              | HTTP | Description       | Body                                               |
