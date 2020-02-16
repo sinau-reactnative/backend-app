@@ -27,20 +27,20 @@
 
 ## /api/v1/tenants
 
-| Endpoint              | HTTP   | Description       | Body                               |
-| --------------------- | ------ | ----------------- | ---------------------------------- |
-| `/api/v1/tenants/`    | POST   | Create tenant     | `name`, `no_ktp`, `ttl`, `address` |
-| `/api/v1/tenants/`    | GET    | Get all tenants   |                                    |
-| `/api/v1/tenants/`    | PATCH  | Update user by id | `name`, `no_ktp`, `ttl`, `address` |
-| `/api/v1/tenants/:id` | GET    | Get user by id    |                                    |
-| `/api/v1/tenants/:id` | DELETE | DELETE user by id |                                    |
+| Endpoint              | HTTP   | Description         | Body                               |
+| --------------------- | ------ | ------------------- | ---------------------------------- |
+| `/api/v1/tenants/`    | POST   | Create tenant       | `name`, `no_ktp`, `ttl`, `address` |
+| `/api/v1/tenants/`    | GET    | Get all tenants     |                                    |
+| `/api/v1/tenants/`    | PATCH  | Update tenant by id | `name`, `no_ktp`, `ttl`, `address` |
+| `/api/v1/tenants/:id` | GET    | Get tenant by id    |                                    |
+| `/api/v1/tenants/:id` | DELETE | DELETE tenant by id |                                    |
 
 ## /api/v1/merchants
 
-| Endpoint                | HTTP   | Description       | Body                                                                                                                                   |
-| ----------------------- | ------ | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `/api/v1/merchants/`    | POST   | Create tenant     | `merchant_no`, `merchant_status`, `floor_position`,` type_of_sale``type_of_merchant `,`merchant_space`,`price_per_meter`,`total_price` |
-| `/api/v1/merchants/`    | GET    | Get all merchants |                                                                                                                                        |
-| `/api/v1/merchants/`    | PATCH  | Update user by id | `merchant_no`, `merchant_status`, `floor_position`,` type_of_sale``type_of_merchant `,`merchant_space`,`price_per_meter`,`total_price` |
-| `/api/v1/merchants/:id` | GET    | Get user by id    |                                                                                                                                        |
-| `/api/v1/merchants/:id` | DELETE | DELETE user by id |                                                                                                                                        |
+| Endpoint                | HTTP   | Description           | Body                                                                                                                                  |
+| ----------------------- | ------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/v1/merchants/`    | POST   | Create tenant         | `merchant_no`, `merchant_status`, `floor_position`,`type_of_sale`,`type_of_merchant`,`merchant_space`,`price_per_meter`,`total_price` |
+| `/api/v1/merchants/`    | GET    | Get all merchants     |                                                                                                                                       |
+| `/api/v1/merchants/`    | PATCH  | Update merchant by id | `merchant_no`, `merchant_status`, `floor_position`,`type_of_sale`,`type_of_merchant`,`merchant_space`,`price_per_meter`,`total_price` |
+| `/api/v1/merchants/:id` | GET    | Get merchant by id    |                                                                                                                                       |
+| `/api/v1/merchants/:id` | DELETE | DELETE merchant by id |                                                                                                                                       |

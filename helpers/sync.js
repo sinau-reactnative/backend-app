@@ -35,7 +35,7 @@ CREATE TABLE tenants (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name varchar(60),
     no_ktp varchar(16) UNIQUE,
-    ttl varchar(15),
+    ttl varchar(50),
     address varchar(100),
     ktp_scan varchar(150),
     created_at timestamp DEFAULT current_timestamp,
@@ -61,17 +61,17 @@ CREATE TABLE merchants (
 );
 `;
 
-const createProgressTable = `
-CREATE TABLE progress (
+const createBillingTable = `
+CREATE TABLE billings (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     merchant_id int,
     tenant_id int,
     payment_term varchar(50),
     due_date date,
     nominal varchar(10),
+    payment_status enum('menunggu_validasi', 'sudah_validasi'),
     payment_proof varchar(150),
     receipt varchar(150),
-    payment_status enum('menunggu_validasi', 'sudah_validasi'),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
     FOREIGN KEY (merchant_id) REFERENCES merchants(id),
@@ -129,10 +129,10 @@ const createMerchant = new Promise((resolve, reject) => {
   });
 });
 
-const createProgress = new Promise((resolve, reject) => {
-  db.query(createProgressTable, err => {
+const createBilling = new Promise((resolve, reject) => {
+  db.query(createBillingTable, err => {
     if (err) reject(err);
-    else resolve("Progress Table Created");
+    else resolve("Billing Table Created");
   });
 });
 
@@ -156,7 +156,7 @@ Promise.all([
   createMerchant,
   createLogs,
   createImage,
-  createProgress
+  createBilling
 ]).then(result => {
   result.map(i => console.log(i));
 });

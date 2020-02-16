@@ -13,6 +13,7 @@ const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const tenantRoute = require("./routes/tenants");
 const merchantRoute = require("./routes/merchants");
+const billingRoute = require("./routes/billings");
 
 // Sync database, only uncomment when the app first running at your machine
 // require("./helpers/sync");
@@ -30,6 +31,7 @@ app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/tenants", tenantRoute);
 app.use("/api/v1/merchants", merchantRoute);
+app.use("/api/v1/billings", billingRoute);
 
 app.listen(PORT, () =>
   console.log(`Server running at http://localhost:${PORT}`)
