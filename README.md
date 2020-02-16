@@ -27,10 +27,10 @@
 
 ## /api/v1/tenants
 
-| Endpoint              | HTTP   | Description       | Body                                           |
-| --------------------- | ------ | ----------------- | ---------------------------------------------- |
-| `/api/v1/tenants/`    | POST   | Create tenant     | `name`, `no_ktp`, `ttl`, `address`, `ktp_scan` |
-| `/api/v1/tenants/`    | GET    | Get all tenants   |                                                |
-| `/api/v1/tenants/`    | PATCH  | Update user by id | `name`, `no_ktp`, `ttl`, `address`, `ktp_scan` |
-| `/api/v1/tenants/:id` | GET    | Get user by id    |                                                |
-| `/api/v1/tenants/:id` | DELETE | DELETE user by id |                                                |
+| Endpoint              | HTTP   | Description       | Body                               |
+| --------------------- | ------ | ----------------- | ---------------------------------- |
+| `/api/v1/tenants/`    | POST   | Create tenant     | `name`, `no_ktp`, `ttl`, `address` |
+| `/api/v1/tenants/`    | GET    | Get all tenants   |                                    |
+| `/api/v1/tenants/`    | PATCH  | Update user by id | `name`, `no_ktp`, `ttl`, `address` |
+| `/api/v1/tenants/:id` | GET    | Get user by id    |                                    |
+| `/api/v1/tenants/:id` | DELETE | DELETE user by id |                                    |

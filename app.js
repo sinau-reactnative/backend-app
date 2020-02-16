@@ -7,7 +7,7 @@ const helmet = require("helmet");
 const multer = require("multer");
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3030;
+const PORT = Number(process.env.PORT) || 3000;
 const upload = multer();
 
 // Import Route

@@ -1,7 +1,7 @@
 const db = require("../configs/db");
 const { encrypt } = require("../helpers/encryption");
 
-const queryCreateTable = `
+const createUserTable = `
 CREATE TABLE users (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     fullname varchar(60),
@@ -79,7 +79,7 @@ CREATE TABLE progress (
 );
 `;
 
-const createLogTable = `
+const createLogsTable = `
 CREATE TABLE logs (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id int,
@@ -92,38 +92,71 @@ CREATE TABLE logs (
 );
 `;
 
-db.query(queryCreateTable, err => {
-  if (err) {
-    throw err;
-  } else {
-    console.log("New Table User has been created");
-    return db.query(firstUserCreated, err => {
-      if (err) throw err;
-      else {
-        console.log("New User has been created");
-        return db.query(createTenantTable, err => {
-          if (err) throw err;
-          else {
-            console.log("New tenant table");
-            return db.query(createMerchantTable, err => {
-              if (err) throw err;
-              else {
-                console.log("New merchant table");
-                return db.query(createProgressTable, err => {
-                  if (err) throw err;
-                  else {
-                    console.log("New progress table");
-                    return db.query(createLogTable, err => {
-                      if (err) throw err;
-                      else console.log("New logs table");
-                    });
-                  }
-                });
-              }
-            });
-          }
-        });
-      }
-    });
-  }
+const createImageTable = `
+CREATE TABLE images (
+    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    merchant_id int,
+    url varchar(150),
+    created_at timestamp DEFAULT current_timestamp,
+    updated_at timestamp DEFAULT current_timestamp,
+    FOREIGN KEY (merchant_id) REFERENCES tenants(id)
+)
+`;
+
+const createUser = new Promise((resolve, reject) => {
+  db.query(createUserTable, err => {
+    if (err) reject(err);
+    else {
+      db.query(firstUserCreated, err => {
+        if (err) reject(err);
+        else resolve("User Table Created");
+      });
+    }
+  });
+});
+
+const createTenant = new Promise((resolve, reject) => {
+  db.query(createTenantTable, err => {
+    if (err) reject(err);
+    else resolve("Tenant Table Created");
+  });
+});
+
+const createMerchant = new Promise((resolve, reject) => {
+  db.query(createMerchantTable, err => {
+    if (err) reject(err);
+    else resolve("Merchant Table Created");
+  });
+});
+
+const createProgress = new Promise((resolve, reject) => {
+  db.query(createProgressTable, err => {
+    if (err) reject(err);
+    else resolve("Progress Table Created");
+  });
+});
+
+const createLogs = new Promise((resolve, reject) => {
+  db.query(createLogsTable, err => {
+    if (err) reject(err);
+    else resolve("Logs Table Created");
+  });
+});
+
+const createImage = new Promise((resolve, reject) => {
+  db.query(createImageTable, err => {
+    if (err) reject(err);
+    else resolve("Image Table Created");
+  });
+});
+
+Promise.all([
+  createUser,
+  createTenant,
+  createMerchant,
+  createLogs,
+  createImage,
+  createProgress
+]).then(result => {
+  result.map(i => console.log(i));
 });

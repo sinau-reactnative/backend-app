@@ -3,7 +3,9 @@ const { sendResponse } = require("../helpers/response");
 
 module.exports = {
   createTenant: (req, res) => {
-    const { name, no_ktp, ttl, address, ktp_scan } = req.body;
+    const { name, no_ktp, ttl, address } = req.body;
+    let ktp_scan = req.files;
+    ktp_scan = ktp_scan ? "ADA IMAGE" : "NGGAK ADA IMAGE";
     const sql = `
         INSERT INTO tenants 
         VALUES (
@@ -56,17 +58,26 @@ module.exports = {
 
   updateTenantId: (req, res) => {
     const { id } = req.params;
-    const { name, no_ktp, ttl, address, ktp_scan } = req.body;
-    const sql = `
+    const { name, no_ktp, ttl, address } = req.body;
+    let ktp_scan = req.files;
+    let data = [];
+    let sql = `
         UPDATE tenants
         SET name = ?,
             no_ktp = ?,
             ttl = ?,
-            address = ?,
-            ktp_scan = ?
-        WHERE id = ? ;
+            address = ?       
     `;
-    db.query(sql, [name, no_ktp, ttl, address, ktp_scan, id], (err, result) => {
+    if (ktp_scan) {
+      ktp_scan = ktp_scan ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      sql += `, ktp_scan = ?`;
+      data = [name, no_ktp, ttl, address, ktp_scan, id];
+    } else {
+      data = [name, no_ktp, ttl, address, id];
+    }
+    sql += `WHERE id = ?;`;
+
+    db.query(sql, data, (err, result) => {
       if (err) {
         sendResponse(res, 500, { response: "error_when_update_tenant", err });
       } else {
