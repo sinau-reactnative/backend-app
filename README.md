@@ -34,3 +34,13 @@
 | `/api/v1/tenants/`    | PATCH  | Update user by id | `name`, `no_ktp`, `ttl`, `address` |
 | `/api/v1/tenants/:id` | GET    | Get user by id    |                                    |
 | `/api/v1/tenants/:id` | DELETE | DELETE user by id |                                    |
+
+## /api/v1/merchants
+
+| Endpoint                | HTTP   | Description       | Body                                                                                                                                   |
+| ----------------------- | ------ | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/v1/merchants/`    | POST   | Create tenant     | `merchant_no`, `merchant_status`, `floor_position`,` type_of_sale``type_of_merchant `,`merchant_space`,`price_per_meter`,`total_price` |
+| `/api/v1/merchants/`    | GET    | Get all merchants |                                                                                                                                        |
+| `/api/v1/merchants/`    | PATCH  | Update user by id | `merchant_no`, `merchant_status`, `floor_position`,` type_of_sale``type_of_merchant `,`merchant_space`,`price_per_meter`,`total_price` |
+| `/api/v1/merchants/:id` | GET    | Get user by id    |                                                                                                                                        |
+| `/api/v1/merchants/:id` | DELETE | DELETE user by id |                                                                                                                                        |
