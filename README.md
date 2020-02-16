@@ -11,7 +11,7 @@
 
 | Endpoint              | HTTP | Description       | Body                                               |
 | --------------------- | ---- | ----------------- | -------------------------------------------------- |
-| `/api/v1/auth/login`  | POST | Update user by id | `email`, `password`                                |
+| `/api/v1/auth/signin` | POST | Update user by id | `email`, `password`                                |
 | `/api/v1/auth/signup` | POST | Get all auth      | `fullname`, `email`, `username`, `address`, `role` |
 
 - please take note : signup and all of users endpoint can be perform by `superadmin` only
@@ -24,3 +24,13 @@
 | `/api/v1/users/`    | GET    | Get all users     |                                                    |
 | `/api/v1/users/:id` | GET    | Get user by id    |                                                    |
 | `/api/v1/users/:id` | DELETE | DELETE user by id |                                                    |
+
+## /api/v1/tenants
+
+| Endpoint              | HTTP   | Description       | Body                                           |
+| --------------------- | ------ | ----------------- | ---------------------------------------------- |
+| `/api/v1/tenants/`    | POST   | Create tenant     | `name`, `no_ktp`, `ttl`, `address`, `ktp_scan` |
+| `/api/v1/tenants/`    | GET    | Get all tenants   |                                                |
+| `/api/v1/tenants/`    | PATCH  | Update user by id | `name`, `no_ktp`, `ttl`, `address`, `ktp_scan` |
+| `/api/v1/tenants/:id` | GET    | Get user by id    |                                                |
+| `/api/v1/tenants/:id` | DELETE | DELETE user by id |                                                |
