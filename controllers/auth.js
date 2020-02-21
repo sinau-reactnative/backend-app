@@ -69,7 +69,12 @@ module.exports = {
             sendResponse(res, 200, {
               message: "You're logged in",
               token,
-              user: result[0]
+              user: {
+                id: result[0].id,
+                name: result[0].name,
+                email: result[0].email,
+                role: result[0].role
+              }
             });
           } else {
             sendResponse(res, 500, { response: "check_your_password", err });

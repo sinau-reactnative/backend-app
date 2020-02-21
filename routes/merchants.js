@@ -4,6 +4,7 @@ const multer = require("multer");
 const Router = express.Router();
 const upload = multer();
 
+const { isAuthenticated } = require("../middlewares");
 const merchants = require("../controllers/merchant");
 
 const cpUpload = upload.fields([
@@ -12,12 +13,12 @@ const cpUpload = upload.fields([
 ]);
 
 Router.route("/")
-  .get(merchants.getAllMerchants)
-  .post(cpUpload, merchants.createMerchant);
+  .get(isAuthenticated, merchants.getAllMerchants)
+  .post(isAuthenticated, cpUpload, merchants.createMerchant);
 
 Router.route("/:id")
-  .get(merchants.getMerchantById)
-  .patch(cpUpload, merchants.updateMerchantId)
-  .delete(merchants.deleteMerchantById);
+  .get(isAuthenticated, merchants.getMerchantById)
+  .patch(isAuthenticated, cpUpload, merchants.updateMerchantId)
+  .delete(isAuthenticated, merchants.deleteMerchantById);
 
 module.exports = Router;

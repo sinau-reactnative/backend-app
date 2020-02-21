@@ -4,6 +4,7 @@ const multer = require("multer");
 const Router = express.Router();
 const upload = multer();
 
+const { isAuthenticated } = require("../middlewares");
 const billing = require("../controllers/billings");
 
 const cpUpload = upload.fields([
@@ -12,11 +13,11 @@ const cpUpload = upload.fields([
 ]);
 
 Router.route("/")
-  .get(billing.getAllBillings)
-  .post(cpUpload, billing.createBilling);
+  .get(isAuthenticated, billing.getAllBillings)
+  .post(isAuthenticated, cpUpload, billing.createBilling);
 Router.route("/:id")
-  .get(billing.getBillingById)
-  .patch(cpUpload, billing.updateMerchantId)
-  .delete(billing.deleteBillingById);
+  .get(isAuthenticated, billing.getBillingById)
+  .patch(isAuthenticated, cpUpload, billing.updateMerchantId)
+  .delete(isAuthenticated, billing.deleteBillingById);
 
 module.exports = Router;
