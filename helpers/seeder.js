@@ -56,6 +56,35 @@ INSERT INTO merchants VALUES
 );
 `;
 
+const sqlBilling = `
+INSERT INTO billings VALUES
+(
+    NULL,
+    1,
+    1,
+    'PEMBAYARAN 1',
+    '2019-02-22',
+    1000000,
+    'menunggu_validasi',
+    'http://link-ke-payment-proof',
+    '',
+    DEFAULT,
+    DEFAULT
+),(
+    NULL,
+    2,
+    1,
+    'PEMBAYARAN 2',
+    '2019-01-21',
+    30000,
+    'sudah_validasi',
+    'http://link-ke-payment-proof',
+    'http://link-ke-kwitansi',
+    DEFAULT,
+    DEFAULT
+);
+`;
+
 const seederMerchant = new Promise((resolve, reject) => {
   db.query(sqlMerchant, err => {
     if (err) reject(err);
@@ -70,6 +99,13 @@ const seederTenant = new Promise((resolve, reject) => {
   });
 });
 
-Promise.all([seederMerchant, seederTenant]).then(result => {
+const seederBilling = new Promise((resolve, reject) => {
+  db.query(sqlBilling, err => {
+    if (err) reject(err);
+    else resolve("Billing Seeders Inserted");
+  });
+});
+
+Promise.all([seederMerchant, seederTenant, seederBilling]).then(result => {
   result.map(i => console.log(i));
 });

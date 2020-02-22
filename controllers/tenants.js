@@ -29,9 +29,10 @@ module.exports = {
   },
 
   getAllTenant: (req, res) => {
-    const sql = `
-        SELECT * FROM tenants;
+    let sql = `
+        SELECT * FROM tenants 
     `;
+
     db.query(sql, [], (err, result) => {
       if (err) {
         sendResponse(res, 500, { response: "error_when_get_all_tenants", err });
