@@ -3,7 +3,7 @@ const { sendResponse } = require("../helpers/response");
 
 module.exports = {
   createTenant: (req, res) => {
-    const { name, no_ktp, ttl, address } = req.body;
+    const { name, no_ktp, place_of_birth, date_of_birth, address } = req.body;
     let ktp_scan = req.files;
     ktp_scan = ktp_scan ? "ADA IMAGE" : "NGGAK ADA IMAGE";
     const sql = `
@@ -15,17 +15,25 @@ module.exports = {
             ?,
             ?,
             ?,
+            ?,
             DEFAULT,
             DEFAULT
         );`;
 
-    db.query(sql, [name, no_ktp, ttl, address, ktp_scan], (err, result) => {
-      if (err) {
-        sendResponse(res, 500, { response: "error_when_make_new_tenant", err });
-      } else {
-        sendResponse(res, 200, { id: result.insertId });
+    db.query(
+      sql,
+      [name, no_ktp, place_of_birth, date_of_birth, address, ktp_scan],
+      (err, result) => {
+        if (err) {
+          sendResponse(res, 500, {
+            response: "error_when_make_new_tenant",
+            err
+          });
+        } else {
+          sendResponse(res, 200, { id: result.insertId });
+        }
       }
-    });
+    );
   },
 
   getAllTenant: (req, res) => {
@@ -59,22 +67,31 @@ module.exports = {
 
   updateTenantId: (req, res) => {
     const { id } = req.params;
-    const { name, no_ktp, ttl, address } = req.body;
+    const { name, no_ktp, place_of_birth, date_of_birth, address } = req.body;
     let ktp_scan = req.files;
     let data = [];
     let sql = `
         UPDATE tenants
         SET name = ?,
             no_ktp = ?,
-            ttl = ?,
+            place_of_birth = ?,
+            date_of_birth = ?,
             address = ?       
     `;
     if (ktp_scan) {
       ktp_scan = ktp_scan ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       sql += `, ktp_scan = ?`;
-      data = [name, no_ktp, ttl, address, ktp_scan, id];
+      data = [
+        name,
+        no_ktp,
+        place_of_birth,
+        date_of_birth,
+        address,
+        ktp_scan,
+        id
+      ];
     } else {
-      data = [name, no_ktp, ttl, address, id];
+      data = [name, no_ktp, place_of_birth, date_of_birth, address, id];
     }
     sql += `WHERE id = ?;`;
 
