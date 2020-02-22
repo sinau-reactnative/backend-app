@@ -12,7 +12,7 @@ Router.route("/")
   .post(isAuthenticated, upload.array("scan_ktp"), tenant.createTenant);
 Router.route("/:id")
   .get(isAuthenticated, tenant.getTenantById)
-  .patch(isAuthenticated, tenant.updateTenantId)
-  .delete(isAuthenticated, upload.array("scan_ktp"), tenant.deleteTenantId);
+  .patch(isAuthenticated, upload.array("scan_ktp"), tenant.updateTenantId)
+  .delete(isAuthenticated, tenant.deleteTenantId);
 
 module.exports = Router;
