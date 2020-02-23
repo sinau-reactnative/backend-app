@@ -14,11 +14,11 @@ const cpUpload = upload.fields([
 
 Router.route("/")
   .get(isAuthenticated, merchants.getAllMerchants)
-  .post(isAuthenticated, cpUpload, merchants.createMerchant);
+  .post(cpUpload, isAuthenticated, merchants.createMerchant);
 
 Router.route("/:id")
   .get(isAuthenticated, merchants.getMerchantById)
-  .patch(isAuthenticated, cpUpload, merchants.updateMerchantId)
+  .patch(cpUpload, isAuthenticated, merchants.updateMerchantId)
   .delete(isAuthenticated, merchants.deleteMerchantById);
 
 module.exports = Router;

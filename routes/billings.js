@@ -14,10 +14,10 @@ const cpUpload = upload.fields([
 
 Router.route("/")
   .get(isAuthenticated, billing.getAllBillings)
-  .post(isAuthenticated, cpUpload, billing.createBilling);
+  .post(cpUpload, isAuthenticated, billing.createBilling);
 Router.route("/:id")
   .get(isAuthenticated, billing.getBillingById)
-  .patch(isAuthenticated, cpUpload, billing.updateMerchantId)
+  .patch(cpUpload, isAuthenticated, billing.updateMerchantId)
   .delete(isAuthenticated, billing.deleteBillingById);
 
 module.exports = Router;

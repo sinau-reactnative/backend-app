@@ -74,7 +74,7 @@ module.exports = {
       })
       .catch(err => {
         sendResponse(res, 500, {
-          response: "error_when_get_all_merchants",
+          response: "error_when_get_all_tenants",
           err
         });
       });

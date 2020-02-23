@@ -8,11 +8,19 @@ module.exports = {
       tenant_id,
       payment_term,
       due_date,
-      nominal,
-      payment_status
+      nominal
     } = req.body;
-    let attachment = req.files;
-    attachment = attachment ? "ADA IMAGE" : "NGGAK ADA IMAGE";
+    let payment_status = "";
+    let payment_proof = req.files["payment_proof"];
+    let receipt = req.files["receipt"];
+    payment_proof = payment_proof ? 1 : 0;
+    receipt = receipt ? 1 : 0;
+    if (payment_proof == 1 && receipt == 1) {
+      payment_status = "sudah_validasi";
+    } else {
+      payment_status = "menunggu_validasi";
+    }
+
     const sql = `
         INSERT INTO billings
         VALUES (
@@ -24,7 +32,9 @@ module.exports = {
             ?,
             ?,
             ?,
-            ?
+            ?,
+            DEFAULT,
+            DEFAULT
         );
     `;
 
@@ -37,8 +47,8 @@ module.exports = {
         due_date,
         nominal,
         payment_status,
-        attachment,
-        attachment
+        payment_proof,
+        receipt
       ],
       (err, result) => {
         if (err) {
@@ -54,18 +64,47 @@ module.exports = {
   },
 
   getAllBillings: (req, res) => {
-    const sql = `SELECT * FROM billings;`;
+    const { limit, offset } = req.query;
+    let sql = `
+        SELECT * FROM billings LIMIT ${Number(limit) || 20} OFFSET ${Number(
+      offset
+    ) || 0}
+    `;
 
-    db.query(sql, [], (err, result) => {
-      if (err) {
+    const total = `SELECT COUNT(id) as total FROM billings`;
+
+    const getSql = new Promise((resolve, reject) => {
+      db.query(sql, [], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    const totalSql = new Promise((resolve, reject) => {
+      db.query(total, [], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    Promise.all([getSql, totalSql])
+      .then(result => {
+        const page = offset / limit + 1;
+        const total = result[1].map(i => i.total)[0];
+        const hasNext = total - page * limit > 0 ? true : false;
+        const pagination = {
+          page,
+          hasNext,
+          total
+        };
+        sendResponse(res, 200, { result: result[0], pagination });
+      })
+      .catch(err => {
         sendResponse(res, 500, {
           response: "error_when_get_all_billings",
           err
         });
-      } else {
-        sendResponse(res, 200, result);
-      }
-    });
+      });
   },
 
   getBillingById: (req, res) => {
@@ -90,10 +129,11 @@ module.exports = {
       tenant_id,
       payment_term,
       due_date,
-      nominal,
-      payment_status
+      nominal
     } = req.body;
-    let attachment = req.files;
+    let payment_status = "";
+    let payment_proof = req.files["payment_proof"];
+    let receipt = req.files["receipt"];
     let data = [];
     let sql = `
       UPDATE merchants
@@ -105,8 +145,10 @@ module.exports = {
           payment_status = ?
     `;
 
-    if (attachment) {
-      attachment = attachment ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+    if (payment_proof && receipt) {
+      payment_proof = payment_proof ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      receipt = receipt ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      payment_status = "sudah_validasi";
       sql += `, payment_proof = ?, receipt = ? `;
       data = [
         merchant_id,
@@ -115,8 +157,36 @@ module.exports = {
         due_date,
         nominal,
         payment_status,
-        attachment,
-        attachment,
+        payment_proof,
+        receipt,
+        id
+      ];
+    } else if (payment_proof) {
+      payment_proof = payment_proof ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      payment_status = "menunggu_validasi";
+      sql += `, payment_proof = ? `;
+      data = [
+        merchant_id,
+        tenant_id,
+        payment_term,
+        due_date,
+        nominal,
+        payment_status,
+        payment_proof,
+        id
+      ];
+    } else if (receipt) {
+      receipt = receipt ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      payment_status = "menunggu_validasi";
+      sql += `, receipt = ? `;
+      data = [
+        merchant_id,
+        tenant_id,
+        payment_term,
+        due_date,
+        nominal,
+        payment_status,
+        receipt,
         id
       ];
     } else {
