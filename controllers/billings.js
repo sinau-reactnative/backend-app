@@ -64,15 +64,18 @@ module.exports = {
   },
 
   getAllBillings: (req, res) => {
-    const { limit, offset } = req.query;
+    const { limit, offset, start_date, end_date } = req.query;
+    const total = `SELECT COUNT(id) as total FROM billings`;
     let sql = `
-        SELECT * FROM billings LIMIT ${Number(limit) || 20} OFFSET ${Number(
-      offset
-    ) || 0}
+        SELECT * FROM billings 
     `;
 
-    const total = `SELECT COUNT(id) as total FROM billings`;
+    if (start_date && end_date) {
+      sql += `WHERE created_at BETWEEN '${start_date}' AND '${end_date}' `;
+    }
 
+    sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
+    console.log(sql);
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {
         if (err) reject(err);

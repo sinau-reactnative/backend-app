@@ -44,7 +44,7 @@ module.exports = {
     ) || 0}
     `;
 
-    const total = `SELECT COUNT(id) as total FROM merchants`;
+    const total = `SELECT COUNT(id) as total FROM tenants`;
 
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {
