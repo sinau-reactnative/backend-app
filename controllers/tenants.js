@@ -37,17 +37,47 @@ module.exports = {
   },
 
   getAllTenant: (req, res) => {
+    const { limit, offset } = req.query;
     let sql = `
-        SELECT * FROM tenants 
+        SELECT * FROM tenants LIMIT ${Number(limit) || 20} OFFSET ${Number(
+      offset
+    ) || 0}
     `;
 
-    db.query(sql, [], (err, result) => {
-      if (err) {
-        sendResponse(res, 500, { response: "error_when_get_all_tenants", err });
-      } else {
-        sendResponse(res, 200, result);
-      }
+    const total = `SELECT COUNT(id) as total FROM merchants`;
+
+    const getSql = new Promise((resolve, reject) => {
+      db.query(sql, [], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
     });
+
+    const totalSql = new Promise((resolve, reject) => {
+      db.query(total, [], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    Promise.all([getSql, totalSql])
+      .then(result => {
+        const page = offset / limit + 1;
+        const total = result[1].map(i => i.total)[0];
+        const hasNext = total - page * limit > 0 ? true : false;
+        const pagination = {
+          page,
+          hasNext,
+          total
+        };
+        sendResponse(res, 200, { result: result[0], pagination });
+      })
+      .catch(err => {
+        sendResponse(res, 500, {
+          response: "error_when_get_all_merchants",
+          err
+        });
+      });
   },
 
   getTenantById: (req, res) => {

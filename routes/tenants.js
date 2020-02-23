@@ -9,10 +9,10 @@ const tenant = require("../controllers/tenants");
 
 Router.route("/")
   .get(isAuthenticated, tenant.getAllTenant)
-  .post(isAuthenticated, upload.array("scan_ktp"), tenant.createTenant);
+  .post(isAuthenticated, upload.array("ktp_scan"), tenant.createTenant);
 Router.route("/:id")
   .get(isAuthenticated, tenant.getTenantById)
-  .patch(isAuthenticated, upload.array("scan_ktp"), tenant.updateTenantId)
+  .patch(isAuthenticated, upload.array("ktp_scan"), tenant.updateTenantId)
   .delete(isAuthenticated, tenant.deleteTenantId);
 
 module.exports = Router;
