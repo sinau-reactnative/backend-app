@@ -55,6 +55,34 @@ INSERT INTO merchants VALUES
     'http://ini-attachment-2.com',
     DEFAULT,
     DEFAULT
+),(
+  NULL,
+  'AB30200401',
+  'bebas',
+  305,
+  'RAMBAK',
+  'JUALAN',
+  100,
+  '100000',
+  '10000000',
+  'http://ini-attachment-1.com',
+  'http://ini-attachment-2.com',
+  DEFAULT,
+  DEFAULT
+),(
+  NULL,
+  'AB30200501',
+  'bebas',
+  305,
+  'POKEMON',
+  'JUALAN',
+  100,
+  '100000',
+  '10000000',
+  'http://ini-attachment-1.com',
+  'http://ini-attachment-2.com',
+  DEFAULT,
+  DEFAULT
 );
 `;
 
@@ -65,7 +93,7 @@ INSERT INTO billings VALUES
     1,
     1,
     'PEMBAYARAN 1',
-    '2019-02-22',
+    '2020-02-22',
     1000000,
     'menunggu_validasi',
     'http://link-ke-payment-proof',
@@ -77,13 +105,37 @@ INSERT INTO billings VALUES
     2,
     1,
     'PEMBAYARAN 2',
-    '2019-01-21',
+    '2020-01-21',
     30000,
     'sudah_validasi',
     'http://link-ke-payment-proof',
     'http://link-ke-kwitansi',
-    DEFAULT,
+    DATE('2020-02-24'),
     DEFAULT
+),(
+  NULL,
+  3,
+  1,
+  'PEMBAYARAN 2',
+  '2020-02-21',
+  30000,
+  'sudah_validasi',
+  'http://link-ke-payment-proof',
+  'http://link-ke-kwitansi',
+  DATE('2020-02-25'),
+  DEFAULT
+),(
+  NULL,
+  4,
+  2,
+  'PEMBAYARAN 2',
+  '2020-03-01',
+  30000,
+  'sudah_validasi',
+  'http://link-ke-payment-proof',
+  'http://link-ke-kwitansi',
+  DATE('2020-02-21'),
+  DEFAULT
 );
 `;
 

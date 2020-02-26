@@ -65,21 +65,23 @@ module.exports = {
 
   getAllBillings: (req, res) => {
     const { limit, offset, start_date, end_date, due_date } = req.query;
-    const total = `SELECT COUNT(id) as total FROM billings`;
+    let total = `SELECT COUNT(id) as total FROM billings`;
     let sql = `
         SELECT * FROM billings 
     `;
 
     if (start_date && end_date) {
       sql += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
+      total = `SELECT COUNT(id) as total FROM billings WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
     }
 
     if (due_date) {
-      sql += `WHERE due_date > DATE('${due_date}')`;
+      sql += `WHERE due_date < DATE('${due_date}')`;
+      total = `SELECT COUNT(id) as total FROM billings WHERE due_date < DATE('${due_date}')`;
     }
 
     sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
-    console.log(sql);
+
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {
         if (err) reject(err);
