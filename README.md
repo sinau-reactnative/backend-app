@@ -38,13 +38,13 @@
 
 ## /api/v1/merchants
 
-| Endpoint                | HTTP   | Description           | Body                                                                                                                                       |
-| ----------------------- | ------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/api/v1/merchants/`    | POST   | Create tenant         | `merchant_no`, `merchant_status`, `floor_position`, `type_of_sale`, `type_of_merchant`, `merchant_space`, `price_per_meter`, `total_price` |
-| `/api/v1/merchants/`    | GET    | Get all merchants     |                                                                                                                                            |
-| `/api/v1/merchants/`    | PATCH  | Update merchant by id | `merchant_no`, `merchant_status`, `floor_position`,`type_of_sale`, `type_of_merchant`, `merchant_space`, `price_per_meter`, `total_price`  |
-| `/api/v1/merchants/:id` | GET    | Get merchant by id    |                                                                                                                                            |
-| `/api/v1/merchants/:id` | DELETE | DELETE merchant by id |                                                                                                                                            |
+| Endpoint                | HTTP   | Description           | Body                                                                                                                                                   |
+| ----------------------- | ------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/api/v1/merchants/`    | POST   | Create tenant         | `tenant_id`,`merchant_no`, `merchant_status`, `floor_position`, `type_of_sale`, `type_of_merchant`, `merchant_space`, `price_per_meter`, `total_price` |
+| `/api/v1/merchants/`    | GET    | Get all merchants     |                                                                                                                                                        |
+| `/api/v1/merchants/`    | PATCH  | Update merchant by id | `tenant_id`,`merchant_no`, `merchant_status`, `floor_position`,`type_of_sale`, `type_of_merchant`, `merchant_space`, `price_per_meter`, `total_price`  |
+| `/api/v1/merchants/:id` | GET    | Get merchant by id    |                                                                                                                                                        |
+| `/api/v1/merchants/:id` | DELETE | DELETE merchant by id |                                                                                                                                                        |
 
 ## /api/v1/billings
 
