@@ -4,6 +4,7 @@ const { sendResponse } = require("../helpers/response");
 module.exports = {
   createMerchant: (req, res) => {
     const {
+      tenant_id,
       merchant_no,
       merchant_status,
       floor_position,
@@ -29,6 +30,7 @@ module.exports = {
             ?,
             ?,
             ?,
+            ?,
             DEFAULT,
             DEFAULT
         );
@@ -37,6 +39,7 @@ module.exports = {
     db.query(
       sql,
       [
+        tenant_id,
         merchant_no,
         merchant_status,
         floor_position,
@@ -123,6 +126,7 @@ module.exports = {
   updateMerchantId: (req, res) => {
     const { id } = req.params;
     const {
+      tenant_id,
       merchant_no,
       merchant_status,
       floor_position,
@@ -136,7 +140,8 @@ module.exports = {
     let data = [];
     let sql = `
       UPDATE merchants
-      SET merchant_no = ?,
+      SET tenant_id = ?,
+          merchant_no = ?,
           merchant_status = ?,
           floor_position = ?,
           type_of_sale = ?,
@@ -150,6 +155,7 @@ module.exports = {
       attachment = attachment ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       sql += `, attachment_1 = ?, attachment_2 = ? `;
       data = [
+        tenant_id,
         merchant_no,
         merchant_status,
         floor_position,
@@ -164,6 +170,7 @@ module.exports = {
       ];
     } else {
       data = [
+        tenant_id,
         merchant_no,
         merchant_status,
         floor_position,

@@ -47,6 +47,7 @@ CREATE TABLE tenants (
 const createMerchantTable = `
 CREATE TABLE merchants (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    tenant_id int,
     merchant_no varchar(20) NOT NULL,
     merchant_status enum('eksisting', 'bebas') NOT NULL,
     floor_position int(3),
@@ -58,7 +59,8 @@ CREATE TABLE merchants (
     attachment_1 varchar(150),
     attachment_2 varchar(150),
     created_at timestamp DEFAULT current_timestamp,
-    updated_at timestamp DEFAULT current_timestamp
+    updated_at timestamp DEFAULT current_timestamp,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id)
 );
 `;
 

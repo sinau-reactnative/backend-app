@@ -4,6 +4,16 @@ const sqlTenant = `
 INSERT INTO tenants VALUES 
     (
         NULL,
+        'PT. CAHAYA ABADI',
+        '0000000000000000',
+        'Jakarta',
+        '1990-01-01',
+        'Jl. Jakarta Selatan',
+        'http://ini-link-kegambar.com',
+        DEFAULT,
+        DEFAULT
+    ),(
+        NULL,
         'Marco Yogananta',
         '3501922993019122',
         'Malang',
@@ -29,6 +39,7 @@ const sqlMerchant = `
 INSERT INTO merchants VALUES
  (
     NULL,
+    2,
     'AB20100102',
     'eksisting',
     120,
@@ -43,6 +54,7 @@ INSERT INTO merchants VALUES
     DEFAULT
 ),(
     NULL,
+    1,
     'AB30200301',
     'bebas',
     305,
@@ -57,6 +69,7 @@ INSERT INTO merchants VALUES
     DEFAULT
 ),(
   NULL,
+  1,
   'AB30200401',
   'bebas',
   305,
@@ -71,8 +84,9 @@ INSERT INTO merchants VALUES
   DEFAULT
 ),(
   NULL,
+  3,
   'AB30200501',
-  'bebas',
+  'eksisting',
   305,
   'POKEMON',
   'JUALAN',
@@ -139,17 +153,17 @@ INSERT INTO billings VALUES
 );
 `;
 
-const seederMerchant = new Promise((resolve, reject) => {
-  db.query(sqlMerchant, err => {
-    if (err) reject(err);
-    else resolve("Merchant Seeders Inserted");
-  });
-});
-
 const seederTenant = new Promise((resolve, reject) => {
   db.query(sqlTenant, err => {
     if (err) reject(err);
     else resolve("Tenant Seeders Inserted");
+  });
+});
+
+const seederMerchant = new Promise((resolve, reject) => {
+  db.query(sqlMerchant, err => {
+    if (err) reject(err);
+    else resolve("Merchant Seeders Inserted");
   });
 });
 
@@ -160,6 +174,6 @@ const seederBilling = new Promise((resolve, reject) => {
   });
 });
 
-Promise.all([seederMerchant, seederTenant, seederBilling]).then(result => {
+Promise.all([seederTenant, seederMerchant, seederBilling]).then(result => {
   result.map(i => console.log(i));
 });
