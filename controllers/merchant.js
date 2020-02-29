@@ -67,11 +67,14 @@ module.exports = {
   getAllMerchants: (req, res) => {
     const { limit, offset } = req.query;
     const sql = `
-        SELECT * FROM merchants LIMIT ${Number(limit) || 20} OFFSET ${Number(
-      offset
-    ) || 0}
+    SELECT *, T.name,
+           (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.id) AS progress_nominal,
+           ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.id) / (M.total_price)) * 100),2) as progress_billing
+           FROM merchants M 
+           JOIN tenants T
+           ON M.tenant_id = T.id
+           LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};
     `;
-
     const total = `SELECT COUNT(id) as total FROM merchants`;
 
     const getSql = new Promise((resolve, reject) => {

@@ -145,7 +145,7 @@ module.exports = {
     let receipt = req.files["receipt"];
     let data = [];
     let sql = `
-      UPDATE merchants
+      UPDATE billings
       SET merchant_id = ?,
           tenant_id = ?,
           payment_term = ?,
