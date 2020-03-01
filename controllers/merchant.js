@@ -14,12 +14,13 @@ module.exports = {
       price_per_meter,
       total_price
     } = req.body;
+    let _tenantId =
+      merchant_status === "bebas" ? "0000000000000000" : tenant_id;
     let attachment = req.files;
     attachment = attachment ? "ADA IMAGE" : "NGGAK ADA IMAGE";
     const sql = `
         INSERT INTO merchants
         VALUES (
-            NULL,
             ?,
             ?,
             ?,
@@ -39,8 +40,8 @@ module.exports = {
     db.query(
       sql,
       [
-        tenant_id,
         merchant_no,
+        _tenantId,
         merchant_status,
         floor_position,
         type_of_sale,
@@ -51,14 +52,14 @@ module.exports = {
         attachment,
         attachment
       ],
-      (err, result) => {
+      err => {
         if (err) {
           sendResponse(res, 500, {
             response: "error_when_create_new_merchant",
             err
           });
         } else {
-          sendResponse(res, 200, { id: result.insertId });
+          sendResponse(res, 200, { id: merchant_no });
         }
       }
     );
@@ -68,14 +69,14 @@ module.exports = {
     const { limit, offset } = req.query;
     const sql = `
     SELECT *, T.name,
-           (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.id) AS progress_nominal,
-           ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.id) / (M.total_price)) * 100),2) as progress_billing
+           (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) AS progress_nominal,
+           ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) / (M.total_price)) * 100),2) as progress_billing
            FROM merchants M 
            JOIN tenants T
-           ON M.tenant_id = T.id
+           ON M.tenant_id = T.no_ktp
            LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};
     `;
-    const total = `SELECT COUNT(id) as total FROM merchants`;
+    const total = `SELECT COUNT(*) as total FROM merchants`;
 
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {
@@ -114,7 +115,7 @@ module.exports = {
   getMerchantById: (req, res) => {
     const { id } = req.params;
     const sql = `
-        SELECT * FROM merchants WHERE id = ?;
+        SELECT * FROM merchants WHERE merchant_no = ?;
       `;
 
     db.query(sql, [id], (err, result) => {
@@ -130,7 +131,6 @@ module.exports = {
     const { id } = req.params;
     const {
       tenant_id,
-      merchant_no,
       merchant_status,
       floor_position,
       type_of_sale,
@@ -139,10 +139,11 @@ module.exports = {
       price_per_meter,
       total_price
     } = req.body;
+    let _tenantId =
+      merchant_status === "bebas" ? "0000000000000000" : tenant_id;
     let attachment = req.files;
     let data = [
-      tenant_id,
-      merchant_no,
+      _tenantId,
       merchant_status,
       floor_position,
       type_of_sale,
@@ -154,7 +155,6 @@ module.exports = {
     let sql = `
       UPDATE merchants
       SET tenant_id = ?,
-          merchant_no = ?,
           merchant_status = ?,
           floor_position = ?,
           type_of_sale = ?,
@@ -173,7 +173,7 @@ module.exports = {
     } else {
       data.push(id);
     }
-    sql += `WHERE id = ?`;
+    sql += `WHERE merchant_no = ?`;
 
     db.query(sql, data, (err, result) => {
       if (err) {
@@ -186,7 +186,7 @@ module.exports = {
 
   deleteMerchantById: (req, res) => {
     const { id } = req.params;
-    const sql = `DELETE FROM merchants WHERE id = ? ;`;
+    const sql = `DELETE FROM merchants WHERE merchant_no = ? ;`;
 
     db.query(sql, [id], (err, result) => {
       if (err) {

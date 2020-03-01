@@ -63,33 +63,33 @@ INSERT INTO merchants VALUES
     DEFAULT,
     DEFAULT
 ),(
-  'AB30200401',
-  '0000000000000000',
-  'bebas',
-  305,
-  'RAMBAK',
-  'JUALAN',
-  100,
-  '100000',
-  '10000000',
-  'http://ini-attachment-1.com',
-  'http://ini-attachment-2.com',
-  DEFAULT,
-  DEFAULT
+    'AB30200401',
+    '0000000000000000',
+    'bebas',
+    305,
+    'RAMBAK',
+    'JUALAN',
+    100,
+    '100000',
+    '10000000',
+    'http://ini-attachment-1.com',
+    'http://ini-attachment-2.com',
+    DEFAULT,
+    DEFAULT
 ),(
-  'AB30200501',
-  '3501922993019122',
-  'eksisting',
-  305,
-  'POKEMON',
-  'JUALAN',
-  100,
-  '100000',
-  '10000000',
-  'http://ini-attachment-1.com',
-  'http://ini-attachment-2.com',
-  DEFAULT,
-  DEFAULT
+    'AB30200501',
+    '3501922993019122',
+    'eksisting',
+    305,
+    'POKEMON',
+    'JUALAN',
+    100,
+    '100000',
+    '10000000',
+    'http://ini-attachment-1.com',
+    'http://ini-attachment-2.com',
+    DEFAULT,
+    DEFAULT
 );
 `;
 
@@ -118,27 +118,27 @@ INSERT INTO billings VALUES
     DATE('2020-02-24'),
     DEFAULT
 ),(
-  NULL,
-  'AB20100102',
-  'Booking Fee',
-  '2020-02-21',
-  '30000',
-  'sudah_validasi',
-  'http://link-ke-payment-proof',
-  'http://link-ke-kwitansi',
-  DATE('2020-02-25'),
-  DEFAULT
+    NULL,
+    'AB20100102',
+    'Booking Fee',
+    '2020-02-21',
+    '30000',
+    'sudah_validasi',
+    'http://link-ke-payment-proof',
+    'http://link-ke-kwitansi',
+    DATE('2020-02-25'),
+    DEFAULT
 ),(
-  NULL,
-  'AB20100102',
-  'Pembayaran 2',
-  '2020-03-01',
-  '350000',
-  'sudah_validasi',
-  'http://link-ke-payment-proof',
-  'http://link-ke-kwitansi',
-  DATE('2020-02-21'),
-  DEFAULT
+    NULL,
+    'AB20100102',
+    'Pembayaran 2',
+    '2020-03-01',
+    '350000',
+    'sudah_validasi',
+    'http://link-ke-payment-proof',
+    'http://link-ke-kwitansi',
+    DATE('2020-02-21'),
+    DEFAULT
 );
 `;
 

@@ -71,7 +71,7 @@ CREATE TABLE billings (
     payment_term varchar(50),
     due_date date,
     nominal varchar(10),
-    payment_status enum('menunggu_validasi', 'sudah_validasi'),
+    payment_status enum('menunggu_validasi', 'sudah_validasi', 'canceled', 'outstanding'),
     payment_proof varchar(150),
     receipt varchar(150),
     created_at timestamp DEFAULT current_timestamp,

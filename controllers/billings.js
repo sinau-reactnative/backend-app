@@ -3,13 +3,7 @@ const { sendResponse } = require("../helpers/response");
 
 module.exports = {
   createBilling: (req, res) => {
-    const {
-      merchant_id,
-      tenant_id,
-      payment_term,
-      due_date,
-      nominal
-    } = req.body;
+    const { merchant_id, payment_term, due_date, nominal } = req.body;
     let payment_status = "";
     let payment_proof = req.files["payment_proof"];
     let receipt = req.files["receipt"];
@@ -32,7 +26,6 @@ module.exports = {
             ?,
             ?,
             ?,
-            ?,
             DEFAULT,
             DEFAULT
         );
@@ -42,7 +35,6 @@ module.exports = {
       sql,
       [
         merchant_id,
-        tenant_id,
         payment_term,
         due_date,
         nominal,
