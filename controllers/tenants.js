@@ -9,7 +9,6 @@ module.exports = {
     const sql = `
         INSERT INTO tenants 
         VALUES (
-            NULL,
             ?,
             ?,
             ?,
@@ -22,7 +21,7 @@ module.exports = {
 
     db.query(
       sql,
-      [name, no_ktp, place_of_birth, date_of_birth, address, ktp_scan],
+      [no_ktp, name, place_of_birth, date_of_birth, address, ktp_scan],
       (err, result) => {
         if (err) {
           sendResponse(res, 500, {
@@ -44,7 +43,7 @@ module.exports = {
     ) || 0}
     `;
 
-    const total = `SELECT COUNT(id) as total FROM tenants`;
+    const total = `SELECT COUNT(*) as total FROM tenants`;
 
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {
@@ -83,9 +82,8 @@ module.exports = {
   getTenantById: (req, res) => {
     const { id } = req.params;
     const sql = `
-        SELECT * FROM tenants WHERE id = ?;
+        SELECT * FROM tenants WHERE no_ktp = ?;
       `;
-
     db.query(sql, [id], (err, result) => {
       if (err) {
         sendResponse(res, 500, { response: "error_when_get_tenant", err });
@@ -97,13 +95,12 @@ module.exports = {
 
   updateTenantId: (req, res) => {
     const { id } = req.params;
-    const { name, no_ktp, place_of_birth, date_of_birth, address } = req.body;
+    const { name, place_of_birth, date_of_birth, address } = req.body;
     let ktp_scan = req.files;
     let data = [];
     let sql = `
         UPDATE tenants
         SET name = ?,
-            no_ktp = ?,
             place_of_birth = ?,
             date_of_birth = ?,
             address = ?       
@@ -111,19 +108,11 @@ module.exports = {
     if (ktp_scan) {
       ktp_scan = ktp_scan ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       sql += `, ktp_scan = ?`;
-      data = [
-        name,
-        no_ktp,
-        place_of_birth,
-        date_of_birth,
-        address,
-        ktp_scan,
-        id
-      ];
+      data = [name, place_of_birth, date_of_birth, address, ktp_scan, id];
     } else {
-      data = [name, no_ktp, place_of_birth, date_of_birth, address, id];
+      data = [name, place_of_birth, date_of_birth, address, id];
     }
-    sql += `WHERE id = ?;`;
+    sql += `WHERE no_ktp = ?;`;
 
     db.query(sql, data, (err, result) => {
       if (err) {
@@ -136,7 +125,7 @@ module.exports = {
 
   deleteTenantId: (req, res) => {
     const { id } = req.params;
-    const sql = `DELETE FROM tenants WHERE id = ? ;`;
+    const sql = `DELETE FROM tenants WHERE no_ktp = ? ;`;
 
     db.query(sql, [id], (err, result) => {
       if (err) {

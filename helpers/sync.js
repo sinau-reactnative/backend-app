@@ -3,7 +3,7 @@ const { encrypt } = require("../helpers/encryption");
 
 const createUserTable = `
 CREATE TABLE users (
-    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     fullname varchar(60),
     email varchar(30) UNIQUE,
     username varchar(25),
@@ -32,23 +32,22 @@ INSERT INTO users VALUES (
 
 const createTenantTable = `
 CREATE TABLE tenants (
-    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    no_ktp varchar(16) NOT NULL,
     name varchar(60),
-    no_ktp varchar(16) UNIQUE,
     place_of_birth varchar(50),
     date_of_birth date,
     address varchar(100),
     ktp_scan varchar(150),
     created_at timestamp DEFAULT current_timestamp,
-    updated_at timestamp DEFAULT current_timestamp
+    updated_at timestamp DEFAULT current_timestamp,
+    PRIMARY KEY (no_ktp)
 );
 `;
 
 const createMerchantTable = `
 CREATE TABLE merchants (
-    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    tenant_id int,
     merchant_no varchar(20) NOT NULL,
+    tenant_id varchar(16),
     merchant_status enum('eksisting', 'bebas') NOT NULL,
     floor_position int(3),
     type_of_sale varchar(30),
@@ -60,15 +59,15 @@ CREATE TABLE merchants (
     attachment_2 varchar(150),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (tenant_id) REFERENCES tenants(id)
+    PRIMARY KEY (merchant_no),
+    FOREIGN KEY (tenant_id) REFERENCES tenants(no_ktp)
 );
 `;
 
 const createBillingTable = `
 CREATE TABLE billings (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    merchant_id int,
-    tenant_id int,
+    merchant_id varchar(20),
     payment_term varchar(50),
     due_date date,
     nominal varchar(10),
@@ -77,8 +76,7 @@ CREATE TABLE billings (
     receipt varchar(150),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (merchant_id) REFERENCES merchants(id),
-    FOREIGN KEY (tenant_id) REFERENCES tenants(id)
+    FOREIGN KEY (merchant_id) REFERENCES merchants(merchant_no)
 );
 `;
 
@@ -98,11 +96,11 @@ CREATE TABLE logs (
 const createImageTable = `
 CREATE TABLE images (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    merchant_id int,
+    merchant_id varchar(20),
     url varchar(150),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (merchant_id) REFERENCES tenants(id)
+    FOREIGN KEY (merchant_id) REFERENCES merchants(merchant_no)
 )
 `;
 

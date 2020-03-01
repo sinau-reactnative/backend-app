@@ -3,9 +3,8 @@ const db = require("../configs/db");
 const sqlTenant = `
 INSERT INTO tenants VALUES 
     (
-        NULL,
-        'PT. CAHAYA ABADI',
         '0000000000000000',
+        'PT. CAHAYA ABADI',
         'Jakarta',
         '1990-01-01',
         'Jl. Jakarta Selatan',
@@ -13,9 +12,8 @@ INSERT INTO tenants VALUES
         DEFAULT,
         DEFAULT
     ),(
-        NULL,
-        'Marco Yogananta',
         '3501922993019122',
+        'Marco Yogananta',
         'Malang',
         '1997-05-22',
         'Jl. Nipah 3 No 5, Jakarta Selatan',
@@ -23,9 +21,8 @@ INSERT INTO tenants VALUES
         DEFAULT,
         DEFAULT
     ),(
-        NULL,
-        'Alexandro Yogananto',
         '3501927630112523',
+        'Alexandro Yogananto',
         'Yogyakarta',
         '1998-12-03',
         'Jl. Hapin 5 No 3, Selatan Jakarta',
@@ -38,9 +35,8 @@ INSERT INTO tenants VALUES
 const sqlMerchant = `
 INSERT INTO merchants VALUES
  (
-    NULL,
-    2,
     'AB20100102',
+    '3501922993019122',
     'eksisting',
     120,
     'KERUPUK',
@@ -53,9 +49,8 @@ INSERT INTO merchants VALUES
     DEFAULT,
     DEFAULT
 ),(
-    NULL,
-    1,
     'AB30200301',
+    '0000000000000000',
     'bebas',
     305,
     'UDANG',
@@ -68,9 +63,8 @@ INSERT INTO merchants VALUES
     DEFAULT,
     DEFAULT
 ),(
-  NULL,
-  1,
   'AB30200401',
+  '0000000000000000',
   'bebas',
   305,
   'RAMBAK',
@@ -83,9 +77,8 @@ INSERT INTO merchants VALUES
   DEFAULT,
   DEFAULT
 ),(
-  NULL,
-  3,
   'AB30200501',
+  '3501922993019122',
   'eksisting',
   305,
   'POKEMON',
@@ -104,11 +97,10 @@ const sqlBilling = `
 INSERT INTO billings VALUES
 (
     NULL,
-    1,
-    1,
-    'PEMBAYARAN 1',
+    'AB30200501',
+    'Booking Fee',
     '2020-02-22',
-    1000000,
+    '1000000',
     'menunggu_validasi',
     'http://link-ke-payment-proof',
     '',
@@ -116,11 +108,10 @@ INSERT INTO billings VALUES
     DEFAULT
 ),(
     NULL,
-    2,
-    1,
-    'PEMBAYARAN 2',
+    'AB30200501',
+    'Pembayaran 1',
     '2020-01-21',
-    30000,
+    '30000',
     'sudah_validasi',
     'http://link-ke-payment-proof',
     'http://link-ke-kwitansi',
@@ -128,11 +119,10 @@ INSERT INTO billings VALUES
     DEFAULT
 ),(
   NULL,
-  3,
-  1,
-  'PEMBAYARAN 2',
+  'AB20100102',
+  'Booking Fee',
   '2020-02-21',
-  30000,
+  '30000',
   'sudah_validasi',
   'http://link-ke-payment-proof',
   'http://link-ke-kwitansi',
@@ -140,11 +130,10 @@ INSERT INTO billings VALUES
   DEFAULT
 ),(
   NULL,
-  4,
-  2,
-  'PEMBAYARAN 2',
+  'AB20100102',
+  'Pembayaran 2',
   '2020-03-01',
-  30000,
+  '350000',
   'sudah_validasi',
   'http://link-ke-payment-proof',
   'http://link-ke-kwitansi',
