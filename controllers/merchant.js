@@ -140,7 +140,17 @@ module.exports = {
       total_price
     } = req.body;
     let attachment = req.files;
-    let data = [];
+    let data = [
+      tenant_id,
+      merchant_no,
+      merchant_status,
+      floor_position,
+      type_of_sale,
+      type_of_merchant,
+      merchant_space,
+      price_per_meter,
+      total_price
+    ];
     let sql = `
       UPDATE merchants
       SET tenant_id = ?,
@@ -157,33 +167,11 @@ module.exports = {
     if (attachment) {
       attachment = attachment ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       sql += `, attachment_1 = ?, attachment_2 = ? `;
-      data = [
-        tenant_id,
-        merchant_no,
-        merchant_status,
-        floor_position,
-        type_of_sale,
-        type_of_merchant,
-        merchant_space,
-        price_per_meter,
-        total_price,
-        attachment,
-        attachment,
-        id
-      ];
+      data.push(attachment);
+      data.push(attachment);
+      data.push(id);
     } else {
-      data = [
-        tenant_id,
-        merchant_no,
-        merchant_status,
-        floor_position,
-        type_of_sale,
-        type_of_merchant,
-        merchant_space,
-        price_per_meter,
-        total_price,
-        id
-      ];
+      data.push(id);
     }
     sql += `WHERE id = ?`;
 
