@@ -70,12 +70,12 @@ module.exports = {
     `;
 
     if (start_date && end_date) {
-      sql += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
+      sql += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = 'sudah_validasi'`;
       total += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
     }
 
     if (due_date_start && due_date_end) {
-      sql += `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}')`;
+      sql += `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}') `;
       total = `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}')`;
     }
 
@@ -142,7 +142,14 @@ module.exports = {
     let payment_status = "";
     let payment_proof = req.files["payment_proof"];
     let receipt = req.files["receipt"];
-    let data = [];
+    let data = [
+      merchant_id,
+      tenant_id,
+      payment_term,
+      due_date,
+      nominal,
+      payment_status
+    ];
     let sql = `
       UPDATE billings
       SET merchant_id = ?,
@@ -158,56 +165,20 @@ module.exports = {
       receipt = receipt ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       payment_status = "sudah_validasi";
       sql += `, payment_proof = ?, receipt = ? `;
-      data = [
-        merchant_id,
-        tenant_id,
-        payment_term,
-        due_date,
-        nominal,
-        payment_status,
-        payment_proof,
-        receipt,
-        id
-      ];
+      data.push(payment_proof);
+      data.push(receipt);
     } else if (payment_proof) {
       payment_proof = payment_proof ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       payment_status = "menunggu_validasi";
       sql += `, payment_proof = ? `;
-      data = [
-        merchant_id,
-        tenant_id,
-        payment_term,
-        due_date,
-        nominal,
-        payment_status,
-        payment_proof,
-        id
-      ];
+      data.push(payment_proof);
     } else if (receipt) {
       receipt = receipt ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
       payment_status = "menunggu_validasi";
       sql += `, receipt = ? `;
-      data = [
-        merchant_id,
-        tenant_id,
-        payment_term,
-        due_date,
-        nominal,
-        payment_status,
-        receipt,
-        id
-      ];
-    } else {
-      data = [
-        merchant_id,
-        tenant_id,
-        payment_term,
-        due_date,
-        nominal,
-        payment_status,
-        id
-      ];
+      data.push(receipt);
     }
+    data.push(id);
     sql += `WHERE id = ?`;
 
     db.query(sql, data, (err, result) => {

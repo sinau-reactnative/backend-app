@@ -66,18 +66,29 @@ module.exports = {
   },
 
   getAllMerchants: (req, res) => {
-    const { limit, offset } = req.query;
-    const sql = `
+    const { limit, offset, search, type } = req.query;
+    let total = `SELECT COUNT(*) as total FROM merchants M `;
+    let sql = `
     SELECT *, T.name,
            (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) AS progress_nominal,
            ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) / (M.total_price)) * 100),2) as progress_billing
            FROM merchants M 
            JOIN tenants T
            ON M.tenant_id = T.no_ktp
-           LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};
     `;
-    const total = `SELECT COUNT(*) as total FROM merchants`;
 
+    if (search && type === "name") {
+      sql += `WHERE T.name LIKE '%${search}%'`;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE T.name LIKE '%${search}%'`;
+    } else if (search && type === "nik") {
+      sql += `WHERE T.no_ktp = '${search}'`;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE T.no_ktp = '${search}'`;
+    } else if (search && type === "merchant_no") {
+      sql += `WHERE M.merchant_no = '${search}'`;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_no = '${search}'`;
+    }
+
+    sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {
         if (err) reject(err);
