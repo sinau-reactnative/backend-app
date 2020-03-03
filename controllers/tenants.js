@@ -36,14 +36,17 @@ module.exports = {
   },
 
   getAllTenant: (req, res) => {
-    const { limit, offset } = req.query;
-    let sql = `
-        SELECT * FROM tenants LIMIT ${Number(limit) || 20} OFFSET ${Number(
-      offset
-    ) || 0}
+    const { limit, offset, search } = req.query;
+    let total = `SELECT COUNT(*) as total FROM tenants `;
+    let sql = `SELECT * FROM tenants `;
+    if (search) {
+      sql += `WHERE name LIKE '%${search}%'`;
+      total += `WHERE name LIKE '%${search}%'`;
+    }
+    sql += `
+        LIMIT ${Number(limit) || 20} 
+        OFFSET ${Number(offset) || 0}
     `;
-
-    const total = `SELECT COUNT(*) as total FROM tenants`;
 
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [], (err, result) => {

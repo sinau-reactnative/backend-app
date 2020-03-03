@@ -56,20 +56,27 @@ module.exports = {
   },
 
   getAllBillings: (req, res) => {
-    const { limit, offset, start_date, end_date, due_date } = req.query;
-    let total = `SELECT COUNT(id) as total FROM billings`;
+    const {
+      limit,
+      offset,
+      start_date,
+      end_date,
+      due_date_start,
+      due_date_end
+    } = req.query;
+    let total = `SELECT COUNT(id) as total FROM billings `;
     let sql = `
         SELECT * FROM billings 
     `;
 
     if (start_date && end_date) {
       sql += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
-      total = `SELECT COUNT(id) as total FROM billings WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
+      total += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
     }
 
-    if (due_date) {
-      sql += `WHERE due_date < DATE('${due_date}')`;
-      total = `SELECT COUNT(id) as total FROM billings WHERE due_date < DATE('${due_date}')`;
+    if (due_date_start && due_date_end) {
+      sql += `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}')`;
+      total = `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}')`;
     }
 
     sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
