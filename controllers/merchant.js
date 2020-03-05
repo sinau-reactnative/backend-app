@@ -1,6 +1,9 @@
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
 
+const { uploadFile } = require("../helpers/upload");
+const AWS_LINK = process.env.AWS_LINK;
+
 module.exports = {
   createMerchant: (req, res) => {
     const {
@@ -17,7 +20,28 @@ module.exports = {
     let _tenantId =
       merchant_status === "bebas" ? "0000000000000000" : tenant_id;
     let attachment = req.files;
-    attachment = attachment ? "ADA IMAGE" : "NGGAK ADA IMAGE";
+    let _data = [
+      merchant_no,
+      _tenantId,
+      merchant_status,
+      floor_position,
+      type_of_sale,
+      type_of_merchant,
+      merchant_space,
+      price_per_meter,
+      total_price
+    ];
+    if (attachment) {
+      uploadFile(attachment["attachment_1"][0], "attachment_1", merchant_no);
+      uploadFile(attachment["attachment_2"][0], "attachment_2", merchant_no);
+      const attachment_1 = `${AWS_LINK}attachment_1-${merchant_no}.jpg`;
+      const attachment_2 = `${AWS_LINK}attachment_2-${merchant_no}.jpg`;
+      _data.push(attachment_1);
+      _data.push(attachment_2);
+    } else {
+      _data.push("");
+      _data.push("");
+    }
     const sql = `
         INSERT INTO merchants
         VALUES (
@@ -37,32 +61,16 @@ module.exports = {
         );
     `;
 
-    db.query(
-      sql,
-      [
-        merchant_no,
-        _tenantId,
-        merchant_status,
-        floor_position,
-        type_of_sale,
-        type_of_merchant,
-        merchant_space,
-        price_per_meter,
-        total_price,
-        attachment,
-        attachment
-      ],
-      err => {
-        if (err) {
-          sendResponse(res, 500, {
-            response: "error_when_create_new_merchant",
-            err
-          });
-        } else {
-          sendResponse(res, 200, { id: merchant_no });
-        }
+    db.query(sql, _data, err => {
+      if (err) {
+        sendResponse(res, 500, {
+          response: "error_when_create_new_merchant",
+          err
+        });
+      } else {
+        sendResponse(res, 200, { id: merchant_no });
       }
-    );
+    });
   },
 
   getAllMerchants: (req, res) => {

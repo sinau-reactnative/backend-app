@@ -9,7 +9,7 @@ module.exports = {
     let receipt = req.files["receipt"];
     payment_proof = payment_proof ? 1 : 0;
     receipt = receipt ? 1 : 0;
-    if (payment_proof == 1 && receipt == 1) {
+    if (payment_proof === 1 && receipt === 1) {
       payment_status = "sudah_validasi";
     } else {
       payment_status = "menunggu_validasi";

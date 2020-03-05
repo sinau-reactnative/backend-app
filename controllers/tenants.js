@@ -9,9 +9,10 @@ module.exports = {
     let ktp_scan = req.file;
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", no_ktp);
-      ktp_scan = `${AWS_LINK}ktp_scan-${no_ktp}`;
+      ktp_scan = `${AWS_LINK}ktp_scan-${no_ktp}.jpg`;
+    } else {
+      ktp_scan = "";
     }
-    ktp_scan = "";
     const sql = `
         INSERT INTO tenants 
         VALUES (
@@ -116,7 +117,7 @@ module.exports = {
     `;
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", id);
-      ktp_scan = `${AWS_LINK}ktp_scan-${id}`;
+      ktp_scan = `${AWS_LINK}ktp_scan-${id}.jpg`;
       sql += `, ktp_scan = ?`;
       data.push(ktp_scan);
     }
