@@ -80,7 +80,7 @@ module.exports = {
     SELECT *, T.name,
            (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) AS progress_nominal,
            ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) / (M.total_price)) * 100),2) as progress_billing
-           FROM merchants M 
+           FROM merchants M
            JOIN tenants T
            ON M.tenant_id = T.no_ktp
     `;
@@ -134,7 +134,13 @@ module.exports = {
   getMerchantById: (req, res) => {
     const { id } = req.params;
     const sql = `
-        SELECT * FROM merchants WHERE merchant_no = ?;
+    SELECT *, T.name,
+           (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) AS progress_nominal,
+           ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) / (M.total_price)) * 100),2) as progress_billing
+           FROM merchants M
+           JOIN tenants T
+           ON M.tenant_id = T.no_ktp
+    WHERE M.merchant_no = ?;
       `;
 
     db.query(sql, [id], (err, result) => {
@@ -184,10 +190,13 @@ module.exports = {
     `;
 
     if (attachment) {
-      attachment = attachment ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      uploadFile(attachment["attachment_1"][0], "attachment_1", id);
+      uploadFile(attachment["attachment_2"][0], "attachment_2", id);
+      const attachment_1 = `${AWS_LINK}attachment_1-${id}.jpg`;
+      const attachment_2 = `${AWS_LINK}attachment_2-${id}.jpg`;
       sql += `, attachment_1 = ?, attachment_2 = ? `;
-      data.push(attachment);
-      data.push(attachment);
+      data.push(attachment_1);
+      data.push(attachment_2);
       data.push(id);
     } else {
       data.push(id);

@@ -1,15 +1,34 @@
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
+const { uploadFile } = require("../helpers/upload");
+const AWS_LINK = process.env.AWS_LINK;
 
 module.exports = {
   createBilling: (req, res) => {
     const { merchant_id, payment_term, due_date, nominal } = req.body;
     let payment_status = "";
-    let payment_proof = req.files["payment_proof"];
-    let receipt = req.files["receipt"];
-    payment_proof = payment_proof ? 1 : 0;
-    receipt = receipt ? 1 : 0;
-    if (payment_proof === 1 && receipt === 1) {
+    let payment_proof = req.files["payment_proof"][0];
+    let receipt = req.files["receipt"][0];
+
+    // Payment Proof ========================
+    if (payment_proof) {
+      uploadFile(payment_proof, "payment_proof", merchant_id);
+      payment_proof = `${AWS_LINK}payment_proof-${merchant_id}.jpg`;
+    } else {
+      payment_proof = "";
+    }
+    // ======================================
+
+    // Receipt =============================
+    if (receipt) {
+      uploadFile(receipt, "receipt", merchant_id);
+      receipt = `${AWS_LINK}receipt-${merchant_id}.jpg`;
+    } else {
+      receipt = "";
+    }
+    // ======================================
+
+    if (payment_proof.length > 0 && receipt.length > 0) {
       payment_status = "sudah_validasi";
     } else {
       payment_status = "menunggu_validasi";
@@ -140,8 +159,8 @@ module.exports = {
       nominal
     } = req.body;
     let payment_status = "";
-    let payment_proof = req.files["payment_proof"];
-    let receipt = req.files["receipt"];
+    let payment_proof = req.files["payment_proof"][0];
+    let receipt = req.files["receipt"][0];
     let data = [
       merchant_id,
       tenant_id,
@@ -161,22 +180,47 @@ module.exports = {
     `;
 
     if (payment_proof && receipt) {
-      payment_proof = payment_proof ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
-      receipt = receipt ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      // ============ Upload Image ============
+      uploadFile(payment_proof, "payment_proof", merchant_id);
+      uploadFile(receipt, "receipt", merchant_id);
+      // ======================================
+
+      // ============= Data Name ==============
+      payment_proof = `${AWS_LINK}payment_proof-${merchant_id}.jpg`;
+      receipt = `${AWS_LINK}receipt-${merchant_id}.jpg`;
+      // ======================================
+
       payment_status = "sudah_validasi";
       sql += `, payment_proof = ?, receipt = ? `;
+
+      // ========== Insert Data Name ==========
       data.push(payment_proof);
       data.push(receipt);
+      // ======================================
     } else if (payment_proof) {
-      payment_proof = payment_proof ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      // ============ Upload Image ============
+      uploadFile(payment_proof, "payment_proof", merchant_id);
+      payment_proof = `${AWS_LINK}payment_proof-${merchant_id}.jpg`;
+      // ======================================
+
       payment_status = "menunggu_validasi";
+
+      // ========== Insert Data Name ==========
       sql += `, payment_proof = ? `;
       data.push(payment_proof);
+      // ======================================
     } else if (receipt) {
-      receipt = receipt ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      // ============ Upload Image ============
+      uploadFile(receipt, "receipt", merchant_id);
+      receipt = `${AWS_LINK}receipt-${merchant_id}.jpg`;
+      // ======================================
+
       payment_status = "menunggu_validasi";
+
+      // ========== Insert Data Name ==========
       sql += `, receipt = ? `;
       data.push(receipt);
+      // ======================================
     }
     data.push(id);
     sql += `WHERE id = ?`;
