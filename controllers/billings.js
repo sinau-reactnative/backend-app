@@ -76,7 +76,7 @@ module.exports = {
 
     if (due_date_start && due_date_end) {
       sql += `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}') `;
-      total = `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}')`;
+      total += `WHERE due_date BETWEEN DATE('${due_date_start}') AND DATE('${due_date_end}')`;
     }
 
     sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
