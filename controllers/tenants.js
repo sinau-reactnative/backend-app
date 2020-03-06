@@ -1,11 +1,18 @@
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
+const { uploadFile } = require("../helpers/upload");
+const AWS_LINK = process.env.AWS_LINK;
 
 module.exports = {
   createTenant: (req, res) => {
     const { name, no_ktp, place_of_birth, date_of_birth, address } = req.body;
-    let ktp_scan = req.files;
-    ktp_scan = ktp_scan ? "ADA IMAGE" : "NGGAK ADA IMAGE";
+    let ktp_scan = req.file;
+    if (ktp_scan) {
+      uploadFile(ktp_scan, "ktp_scan", no_ktp);
+      ktp_scan = `${AWS_LINK}ktp_scan-${no_ktp}.jpg`;
+    } else {
+      ktp_scan = "";
+    }
     const sql = `
         INSERT INTO tenants 
         VALUES (
@@ -99,8 +106,8 @@ module.exports = {
   updateTenantId: (req, res) => {
     const { id } = req.params;
     const { name, place_of_birth, date_of_birth, address } = req.body;
-    let ktp_scan = req.files;
-    let data = [];
+    let ktp_scan = req.file;
+    let data = [name, place_of_birth, date_of_birth, address];
     let sql = `
         UPDATE tenants
         SET name = ?,
@@ -109,12 +116,12 @@ module.exports = {
             address = ?       
     `;
     if (ktp_scan) {
-      ktp_scan = ktp_scan ? "ADA IMAGE UPDATE" : "NGGAK ADA IMAGE";
+      uploadFile(ktp_scan, "ktp_scan", id);
+      ktp_scan = `${AWS_LINK}ktp_scan-${id}.jpg`;
       sql += `, ktp_scan = ?`;
-      data = [name, place_of_birth, date_of_birth, address, ktp_scan, id];
-    } else {
-      data = [name, place_of_birth, date_of_birth, address, id];
+      data.push(ktp_scan);
     }
+    data.push(id);
     sql += `WHERE no_ktp = ?;`;
 
     db.query(sql, data, (err, result) => {
