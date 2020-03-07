@@ -89,11 +89,11 @@ module.exports = {
       sql += `WHERE T.name LIKE '%${search}%'`;
       total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE T.name LIKE '%${search}%'`;
     } else if (search && type === "nik") {
-      sql += `WHERE T.no_ktp = '${search}'`;
-      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE T.no_ktp = '${search}'`;
+      sql += `WHERE T.no_ktp LIKE '%${search}%'`;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE T.no_ktp LIKE '%${search}%'`;
     } else if (search && type === "merchant_no") {
-      sql += `WHERE M.merchant_no = '${search}'`;
-      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_no = '${search}'`;
+      sql += `WHERE M.merchant_no LIKE '%${search}%'`;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_no LIKE '%${search}%'`;
     }
 
     sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;

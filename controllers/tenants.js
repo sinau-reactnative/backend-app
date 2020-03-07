@@ -117,7 +117,7 @@ module.exports = {
     `;
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", id);
-      ktp_scan = `${AWS_LINK}ktp_scan-${id}.jpg`;
+      ktp_scan = `${AWS_LINK}${id}-ktp_scan.jpg`;
       sql += `, ktp_scan = ?`;
       data.push(ktp_scan);
     }
