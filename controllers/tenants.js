@@ -9,7 +9,7 @@ module.exports = {
     let ktp_scan = req.file;
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", no_ktp);
-      ktp_scan = `${AWS_LINK}ktp_scan-${no_ktp}.jpg`;
+      ktp_scan = `${AWS_LINK}${no_ktp}-ktp_scan.jpg`;
     } else {
       ktp_scan = "";
     }

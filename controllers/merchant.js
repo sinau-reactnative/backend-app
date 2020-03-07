@@ -34,8 +34,8 @@ module.exports = {
     if (attachment) {
       uploadFile(attachment["attachment_1"][0], "attachment_1", merchant_no);
       uploadFile(attachment["attachment_2"][0], "attachment_2", merchant_no);
-      const attachment_1 = `${AWS_LINK}attachment_1-${merchant_no}.jpg`;
-      const attachment_2 = `${AWS_LINK}attachment_2-${merchant_no}.jpg`;
+      const attachment_1 = `${AWS_LINK}${merchant_no}-attachment_1.jpg`;
+      const attachment_2 = `${AWS_LINK}${merchant_no}-attachment_2.jpg`;
       _data.push(attachment_1);
       _data.push(attachment_2);
     } else {
@@ -192,8 +192,8 @@ module.exports = {
     if (attachment) {
       uploadFile(attachment["attachment_1"][0], "attachment_1", id);
       uploadFile(attachment["attachment_2"][0], "attachment_2", id);
-      const attachment_1 = `${AWS_LINK}attachment_1-${id}.jpg`;
-      const attachment_2 = `${AWS_LINK}attachment_2-${id}.jpg`;
+      const attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
+      const attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
       sql += `, attachment_1 = ?, attachment_2 = ? `;
       data.push(attachment_1);
       data.push(attachment_2);
