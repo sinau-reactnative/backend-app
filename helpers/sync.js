@@ -81,16 +81,45 @@ CREATE TABLE billings (
 );
 `;
 
-const createLogsTable = `
-CREATE TABLE logs (
+const createTenantLogsTable = `
+CREATE TABLE tenant_logs (
     id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
     user_id int,
-    fullname varchar(60),
-    after_changed varchar(250),
+    tenant_id varchar(16),
     before_changed varchar(250),
+    after_changed varchar(250),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (tenant_id) REFERENCES tenants(no_ktp)
+);
+`;
+
+const createMerchantLogsTable = `
+CREATE TABLE merchant_logs (
+    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int,
+    merchant_id varchar(20),
+    before_changed varchar(250),
+    after_changed varchar(250),
+    created_at timestamp DEFAULT current_timestamp,
+    updated_at timestamp DEFAULT current_timestamp,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (merchant_id) REFERENCES merchants(merchant_no)
+);
+`;
+
+const createBillingLogsTable = `
+CREATE TABLE billing_logs (
+    id int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    user_id int,
+    billing_id int, 
+    before_changed varchar(250),
+    after_changed varchar(250),
+    created_at timestamp DEFAULT current_timestamp,
+    updated_at timestamp DEFAULT current_timestamp,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (billing_id) REFERENCES billings(id)
 );
 `;
 
@@ -138,8 +167,22 @@ const createBilling = new Promise((resolve, reject) => {
   });
 });
 
-const createLogs = new Promise((resolve, reject) => {
-  db.query(createLogsTable, err => {
+const createTenantLogs = new Promise((resolve, reject) => {
+  db.query(createTenantLogsTable, err => {
+    if (err) reject(err);
+    else resolve("Logs Table Created");
+  });
+});
+
+const createMerchantsLogs = new Promise((resolve, reject) => {
+  db.query(createMerchantLogsTable, err => {
+    if (err) reject(err);
+    else resolve("Logs Table Created");
+  });
+});
+
+const createBillingLogs = new Promise((resolve, reject) => {
+  db.query(createBillingLogsTable, err => {
     if (err) reject(err);
     else resolve("Logs Table Created");
   });
@@ -156,9 +199,11 @@ Promise.all([
   createUser,
   createTenant,
   createMerchant,
-  createLogs,
+  createBilling,
   createImage,
-  createBilling
+  createTenantLogs,
+  createMerchantsLogs,
+  createBillingLogs
 ]).then(result => {
   result.map(i => console.log(i));
 });

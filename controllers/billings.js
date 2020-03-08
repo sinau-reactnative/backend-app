@@ -96,6 +96,12 @@ module.exports = {
     } else if (start_date && end_date && type === "due_date") {
       sql += `WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
       total += `WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
+    } else if (start_date && end_date && type === "estimation") {
+      sql = `
+        SELECT *, 
+        (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
+        FROM billings
+        WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
     }
 
     if (sort && sort_type === "incoming") {
