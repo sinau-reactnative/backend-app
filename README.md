@@ -28,13 +28,13 @@
 
 ## /api/v1/tenants
 
-| Endpoint                  | HTTP   | Description             | Body                                                           |
-| ------------------------- | ------ | ----------------------- | -------------------------------------------------------------- |
-| `/api/v1/tenants/`        | POST   | Create tenant           | `name`, `no_ktp`, `place_of_birth`, `date_of_birth`, `address` |
-| `/api/v1/tenants/`        | GET    | Get all tenants         |                                                                |
-| `/api/v1/tenants/:no_ktp` | PATCH  | Update tenant by no_ktp | `name`, `place_of_birth`, `date_of_birth`, `address`           |
-| `/api/v1/tenants/:no_ktp` | GET    | Get tenant by no_ktp    |                                                                |
-| `/api/v1/tenants/:no_ktp` | DELETE | DELETE tenant by no_ktp |                                                                |
+| Endpoint                  | HTTP   | Description             | Body                                                                          |
+| ------------------------- | ------ | ----------------------- | ----------------------------------------------------------------------------- |
+| `/api/v1/tenants/`        | POST   | Create tenant           | `name`, `no_ktp`, `place_of_birth`,`phone_number`, `date_of_birth`, `address` |
+| `/api/v1/tenants/`        | GET    | Get all tenants         |                                                                               |
+| `/api/v1/tenants/:no_ktp` | PATCH  | Update tenant by no_ktp | `name`, `place_of_birth`,`phone_number`, `date_of_birth`, `address`           |
+| `/api/v1/tenants/:no_ktp` | GET    | Get tenant by no_ktp    |                                                                               |
+| `/api/v1/tenants/:no_ktp` | DELETE | DELETE tenant by no_ktp |                                                                               |
 
 ## /api/v1/merchants
 

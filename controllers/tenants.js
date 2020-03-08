@@ -5,7 +5,14 @@ const AWS_LINK = process.env.AWS_LINK;
 
 module.exports = {
   createTenant: (req, res) => {
-    const { name, no_ktp, place_of_birth, date_of_birth, address } = req.body;
+    const {
+      name,
+      no_ktp,
+      place_of_birth,
+      phone_number,
+      date_of_birth,
+      address
+    } = req.body;
     let ktp_scan = req.file;
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", no_ktp);
@@ -22,13 +29,22 @@ module.exports = {
             ?,
             ?,
             ?,
+            ?,
             DEFAULT,
             DEFAULT
         );`;
 
     db.query(
       sql,
-      [no_ktp, name, place_of_birth, date_of_birth, address, ktp_scan],
+      [
+        no_ktp,
+        name,
+        place_of_birth,
+        phone_number,
+        date_of_birth,
+        address,
+        ktp_scan
+      ],
       (err, result) => {
         if (err) {
           sendResponse(res, 500, {
@@ -105,13 +121,20 @@ module.exports = {
 
   updateTenantId: (req, res) => {
     const { id } = req.params;
-    const { name, place_of_birth, date_of_birth, address } = req.body;
+    const {
+      name,
+      place_of_birth,
+      phone_number,
+      date_of_birth,
+      address
+    } = req.body;
     let ktp_scan = req.file;
-    let data = [name, place_of_birth, date_of_birth, address];
+    let data = [name, place_of_birth, phone_number, date_of_birth, address];
     let sql = `
         UPDATE tenants
         SET name = ?,
             place_of_birth = ?,
+            phone_numer = ?,
             date_of_birth = ?,
             address = ?       
     `;

@@ -35,6 +35,7 @@ CREATE TABLE tenants (
     no_ktp varchar(16) NOT NULL,
     name varchar(60),
     place_of_birth varchar(50),
+    phone_number varchar(20),
     date_of_birth date,
     address varchar(100),
     ktp_scan varchar(150),
