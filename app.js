@@ -11,6 +11,7 @@ const PORT = Number(process.env.PORT) || 3000;
 // Import Route
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
+const imageRoute = require("./routes/image");
 const tenantRoute = require("./routes/tenants");
 const merchantRoute = require("./routes/merchants");
 const billingRoute = require("./routes/billings");
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/images", imageRoute);
 app.use("/api/v1/tenants", tenantRoute);
 app.use("/api/v1/merchants", merchantRoute);
 app.use("/api/v1/billings", billingRoute);
