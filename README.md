@@ -55,3 +55,10 @@
 | `/api/v1/billings/`    | PATCH  | Update merchant by id | `merchant_id`, `payment_term`, `due_date`, `nominal` |
 | `/api/v1/billings/:id` | GET    | Get merchant by id    |                                                      |
 | `/api/v1/billings/:id` | DELETE | DELETE merchant by id |                                                      |
+
+## /api/v1/images
+
+| Endpoint             | HTTP | Description                   | Body                        |
+| -------------------- | ---- | ----------------------------- | --------------------------- |
+| `/api/v1/images/`    | POST | Create tenant                 | `merchant_id`, `id`(number) |
+| `/api/v1/images/:id` | GET  | Get all images by Merchant Id |                             |
