@@ -13,6 +13,6 @@ Router.route("/").post(
   image.uploadNewImage
 );
 
-Router.route("/:merchant_id", isAuthenticated, image.getImageByMerchantId);
+Router.route("/:id").get(isAuthenticated, image.getImageByMerchantId);
 
 module.exports = Router;

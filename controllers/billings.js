@@ -84,6 +84,7 @@ module.exports = {
       sort,
       sort_type,
       merchant_id
+      // summary
     } = req.query;
     let total = `SELECT COUNT(id) as total FROM billings `;
     let sql = `
@@ -113,6 +114,17 @@ module.exports = {
     if (merchant_id) {
       sql += `WHERE merchant_id = '${merchant_id}' ORDER BY created_at ASC`;
     }
+
+    // if (type === "summary"){
+    //   let d = new Date()
+    //   if(summary === "day"){
+    //     // let today = d.get
+    //     sql = `SELECT *,
+    //           (SELECT SUM(nominal) FROM billings WHERE created_at = DATE('${d}')) as TOTAL
+    //           FROM billings
+    //           WHERE created_at = DATE('${d}')`
+    //   } else if (summa)
+    // }
 
     sql += ` LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
 

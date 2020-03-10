@@ -23,10 +23,10 @@ module.exports = {
   },
 
   getImageByMerchantId: (req, res) => {
-    const { merchant_id } = req.params;
+    const { id } = req.params;
     const sql = `SELECT * FROM images WHERE merchant_id = ? ORDER BY created_at ASC;`;
 
-    db.query(sql, [merchant_id], (err, result) => {
+    db.query(sql, [id], (err, result) => {
       if (err) {
         sendResponse(res, 500, {
           response: "error_when_upload_new_image",

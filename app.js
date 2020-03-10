@@ -19,6 +19,7 @@ const billingRoute = require("./routes/billings");
 // Sync database, only uncomment when the app first running at your machine
 // require("./helpers/sync");
 // require("./helpers/seeder");
+require("./helpers/cron");
 
 app.use(cors());
 app.use(bodyParser.json());
