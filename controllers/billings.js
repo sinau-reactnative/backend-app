@@ -11,7 +11,7 @@ module.exports = {
     let receipt = req.files["receipt"];
 
     // Payment Proof ========================
-    if (payment_proof.length > 0) {
+    if (payment_proof) {
       uploadFile(payment_proof[0], "payment_proof", merchant_id);
       payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
     } else {
@@ -20,7 +20,7 @@ module.exports = {
     // ======================================
 
     // Receipt =============================
-    if (receipt.length > 0) {
+    if (receipt) {
       uploadFile(receipt[0], "receipt", merchant_id);
       receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
     } else {
@@ -28,7 +28,7 @@ module.exports = {
     }
     // ======================================
 
-    if (payment_proof.length > 0 && receipt.length > 0) {
+    if (payment_proof && receipt) {
       payment_status = "sudah_validasi";
     } else {
       payment_status = "menunggu_validasi";
@@ -207,7 +207,7 @@ module.exports = {
           payment_status = ?
     `;
 
-    if (payment_proof.length > 0 && receipt.length > 0) {
+    if (payment_proof && receipt) {
       // ============ Upload Image ============
       uploadFile(payment_proof[0], "payment_proof", merchant_id);
       uploadFile(receipt[0], "receipt", merchant_id);
@@ -225,7 +225,7 @@ module.exports = {
       data.push(payment_proof);
       data.push(receipt);
       // ======================================
-    } else if (payment_proof.length > 0) {
+    } else if (payment_proof) {
       // ============ Upload Image ============
       uploadFile(payment_proof[0], "payment_proof", merchant_id);
       payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
@@ -237,7 +237,7 @@ module.exports = {
       sql += `, payment_proof = ? `;
       data.push(payment_proof);
       // ======================================
-    } else if (receipt.length > 0) {
+    } else if (receipt) {
       // ============ Upload Image ============
       uploadFile(receipt[0], "receipt", merchant_id);
       receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
