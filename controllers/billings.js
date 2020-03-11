@@ -13,7 +13,7 @@ module.exports = {
     // Payment Proof ========================
     if (payment_proof) {
       uploadFile(payment_proof, "payment_proof", merchant_id);
-      payment_proof = `${AWS_LINK}payment_proof-${merchant_id}.jpg`;
+      payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
     } else {
       payment_proof = "";
     }
@@ -22,7 +22,7 @@ module.exports = {
     // Receipt =============================
     if (receipt) {
       uploadFile(receipt, "receipt", merchant_id);
-      receipt = `${AWS_LINK}receipt-${merchant_id}.jpg`;
+      receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
     } else {
       receipt = "";
     }
@@ -214,8 +214,8 @@ module.exports = {
       // ======================================
 
       // ============= Data Name ==============
-      payment_proof = `${AWS_LINK}payment_proof-${merchant_id}.jpg`;
-      receipt = `${AWS_LINK}receipt-${merchant_id}.jpg`;
+      payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
+      receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
       // ======================================
 
       payment_status = "sudah_validasi";
@@ -228,7 +228,7 @@ module.exports = {
     } else if (payment_proof) {
       // ============ Upload Image ============
       uploadFile(payment_proof, "payment_proof", merchant_id);
-      payment_proof = `${AWS_LINK}payment_proof-${merchant_id}.jpg`;
+      payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
       // ======================================
 
       payment_status = "menunggu_validasi";
@@ -240,7 +240,7 @@ module.exports = {
     } else if (receipt) {
       // ============ Upload Image ============
       uploadFile(receipt, "receipt", merchant_id);
-      receipt = `${AWS_LINK}receipt-${merchant_id}.jpg`;
+      receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
       // ======================================
 
       payment_status = "menunggu_validasi";
