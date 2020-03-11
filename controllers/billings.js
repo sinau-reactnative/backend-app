@@ -1,4 +1,5 @@
 const db = require("../configs/db");
+const stringify = require("csv-stringify");
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
 const AWS_LINK = process.env.AWS_LINK;
@@ -298,6 +299,27 @@ module.exports = {
         });
       } else {
         sendResponse(res, 200, result);
+      }
+    });
+  },
+
+  downloadCSVbyDate: (req, res) => {
+    const { start_date, end_date } = req.query;
+
+    const sql = `
+        SELECT * FROM billings WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}');
+    `;
+
+    db.query(sql, [], (err, result) => {
+      if (err) {
+        sendResponse(res, 500, { response: "error_when_get_billings", err });
+      } else {
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader(
+          "Content-Disposition",
+          'attachment; filename="' + "billing-" + Date.now() + '.csv"'
+        );
+        stringify(result, { header: true }).pipe(res);
       }
     });
   }
