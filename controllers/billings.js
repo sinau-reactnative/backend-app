@@ -7,12 +7,12 @@ module.exports = {
   createBilling: (req, res) => {
     const { merchant_id, payment_term, due_date, nominal } = req.body;
     let payment_status = "";
-    let payment_proof = req.files["payment_proof"][0];
-    let receipt = req.files["receipt"][0];
+    let payment_proof = req.files["payment_proof"];
+    let receipt = req.files["receipt"];
 
     // Payment Proof ========================
-    if (payment_proof) {
-      uploadFile(payment_proof, "payment_proof", merchant_id);
+    if (payment_proof.length > 0) {
+      uploadFile(payment_proof[0], "payment_proof", merchant_id);
       payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
     } else {
       payment_proof = "";
@@ -20,8 +20,8 @@ module.exports = {
     // ======================================
 
     // Receipt =============================
-    if (receipt) {
-      uploadFile(receipt, "receipt", merchant_id);
+    if (receipt.length > 0) {
+      uploadFile(receipt[0], "receipt", merchant_id);
       receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
     } else {
       receipt = "";
@@ -187,8 +187,8 @@ module.exports = {
       nominal
     } = req.body;
     let payment_status = "";
-    let payment_proof = req.files["payment_proof"][0];
-    let receipt = req.files["receipt"][0];
+    let payment_proof = req.files["payment_proof"];
+    let receipt = req.files["receipt"];
     let data = [
       merchant_id,
       tenant_id,
@@ -207,10 +207,10 @@ module.exports = {
           payment_status = ?
     `;
 
-    if (payment_proof && receipt) {
+    if (payment_proof.length > 0 && receipt.length > 0) {
       // ============ Upload Image ============
-      uploadFile(payment_proof, "payment_proof", merchant_id);
-      uploadFile(receipt, "receipt", merchant_id);
+      uploadFile(payment_proof[0], "payment_proof", merchant_id);
+      uploadFile(receipt[0], "receipt", merchant_id);
       // ======================================
 
       // ============= Data Name ==============
@@ -225,9 +225,9 @@ module.exports = {
       data.push(payment_proof);
       data.push(receipt);
       // ======================================
-    } else if (payment_proof) {
+    } else if (payment_proof.length > 0) {
       // ============ Upload Image ============
-      uploadFile(payment_proof, "payment_proof", merchant_id);
+      uploadFile(payment_proof[0], "payment_proof", merchant_id);
       payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
       // ======================================
 
@@ -237,9 +237,9 @@ module.exports = {
       sql += `, payment_proof = ? `;
       data.push(payment_proof);
       // ======================================
-    } else if (receipt) {
+    } else if (receipt.length > 0) {
       // ============ Upload Image ============
-      uploadFile(receipt, "receipt", merchant_id);
+      uploadFile(receipt[0], "receipt", merchant_id);
       receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
       // ======================================
 
