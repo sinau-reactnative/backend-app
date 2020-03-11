@@ -15,7 +15,7 @@ const cpUpload = upload.fields([
 Router.route("/")
   .get(isAuthenticated, billing.getAllBillings)
   .post(cpUpload, isAuthenticated, billing.createBilling);
-Router.route("/csv").get(billing.downloadCSVbyDate);
+Router.route("/csv").get(isAuthenticated, billing.downloadCSVbyDate);
 Router.route("/:id")
   .get(isAuthenticated, billing.getBillingById)
   .patch(cpUpload, isAuthenticated, billing.updateMerchantId)

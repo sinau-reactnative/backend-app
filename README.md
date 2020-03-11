@@ -48,13 +48,16 @@
 
 ## /api/v1/billings
 
-| Endpoint               | HTTP   | Description           | Body                                                 |
-| ---------------------- | ------ | --------------------- | ---------------------------------------------------- |
-| `/api/v1/billings/`    | POST   | Create tenant         | `merchant_id`, `payment_term`, `due_date`, `nominal` |
-| `/api/v1/billings/`    | GET    | Get all billings      |                                                      |
-| `/api/v1/billings/`    | PATCH  | Update merchant by id | `merchant_id`, `payment_term`, `due_date`, `nominal` |
-| `/api/v1/billings/:id` | GET    | Get merchant by id    |                                                      |
-| `/api/v1/billings/:id` | DELETE | DELETE merchant by id |                                                      |
+| Endpoint               | HTTP   | Description             | Body                                                 |
+| ---------------------- | ------ | ----------------------- | ---------------------------------------------------- |
+| `/api/v1/billings/`    | POST   | Create tenant           | `merchant_id`, `payment_term`, `due_date`, `nominal` |
+| `/api/v1/billings/`    | GET    | Get all billings        |                                                      |
+| `/api/v1/billings/csv` | GET    | Download billing as csv |                                                      |
+| `/api/v1/billings/`    | PATCH  | Update merchant by id   | `merchant_id`, `payment_term`, `due_date`, `nominal` |
+| `/api/v1/billings/:id` | GET    | Get merchant by id      |                                                      |
+| `/api/v1/billings/:id` | DELETE | DELETE merchant by id   |                                                      |
+
+- note: for download csv you must add query `start_date` and `end_date`
 
 ## /api/v1/images
 
