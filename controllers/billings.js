@@ -83,9 +83,26 @@ module.exports = {
       type,
       sort,
       sort_type,
-      merchant_id
+      merchant_id,
+      outstanding,
+      canceled
       // summary
     } = req.query;
+
+    // Outstanding and Canceled
+    let _outstanding = null;
+    let _canceled = null;
+
+    // Cek outstanding
+    if (outstanding === "true") {
+      _outstanding = true;
+    }
+
+    // Cek canceled
+    if (canceled === "true") {
+      _canceled = true;
+    }
+
     let total = `SELECT COUNT(id) as total FROM billings `;
     let sql = `
         SELECT * FROM billings 
@@ -103,6 +120,12 @@ module.exports = {
         (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
         FROM billings
         WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
+    } else if (_outstanding !== null) {
+      sql += `WHERE payment_status = 'outstanding' `;
+      total += `WHERE payment_status = 'outstanding' `;
+    } else if (_canceled !== null) {
+      sql += `WHERE payment_status = 'canceled'`;
+      total += `WHERE payment_status = 'canceled' `;
     }
 
     if (sort && sort_type === "incoming") {
