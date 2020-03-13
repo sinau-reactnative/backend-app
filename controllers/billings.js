@@ -53,15 +53,7 @@ module.exports = {
 
     db.query(
       sql,
-      [
-        merchant_id,
-        payment_term,
-        due_date,
-        nominal,
-        payment_status,
-        payment_proof,
-        receipt
-      ],
+      [merchant_id, payment_term, due_date, nominal, payment_status, payment_proof, receipt],
       (err, result) => {
         if (err) {
           sendResponse(res, 500, {
@@ -86,7 +78,8 @@ module.exports = {
       sort_type,
       merchant_id,
       outstanding,
-      canceled
+      canceled,
+      csv
       // summary
     } = req.query;
 
@@ -103,6 +96,9 @@ module.exports = {
     if (canceled === "true") {
       _canceled = true;
     }
+
+    // Download CSV ?
+    let _csv = csv ? (csv === "true" ? true : false) : false;
 
     let total = `SELECT COUNT(id) as total FROM billings `;
     let sql = `
@@ -136,7 +132,7 @@ module.exports = {
     }
 
     if (merchant_id) {
-      sql += `WHERE merchant_id = '${merchant_id}' ORDER BY created_at ASC`;
+      sql = `SELECT * FROM billings WHERE merchant_id = '${merchant_id}' ORDER BY created_at ASC`;
     }
 
     // if (type === "summary"){
@@ -176,7 +172,16 @@ module.exports = {
           hasNext,
           total
         };
-        sendResponse(res, 200, { result: result[0], pagination });
+        if (_csv) {
+          res.setHeader("Content-Type", "text/csv");
+          res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="' + "billing-" + Date.now() + '.csv"'
+          );
+          stringify(result[0], { header: true }).pipe(res);
+        } else {
+          sendResponse(res, 200, { result: result[0], pagination });
+        }
       })
       .catch(err => {
         sendResponse(res, 500, {
@@ -203,24 +208,11 @@ module.exports = {
 
   updateMerchantId: (req, res) => {
     const { id } = req.params;
-    const {
-      merchant_id,
-      tenant_id,
-      payment_term,
-      due_date,
-      nominal
-    } = req.body;
+    const { merchant_id, tenant_id, payment_term, due_date, nominal } = req.body;
     let payment_status = "";
     let payment_proof = req.files["payment_proof"];
     let receipt = req.files["receipt"];
-    let data = [
-      merchant_id,
-      tenant_id,
-      payment_term,
-      due_date,
-      nominal,
-      payment_status
-    ];
+    let data = [merchant_id, tenant_id, payment_term, due_date, nominal, payment_status];
     let sql = `
       UPDATE billings
       SET merchant_id = ?,
