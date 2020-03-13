@@ -58,6 +58,10 @@
 | `/api/v1/billings/:id` | DELETE | DELETE merchant by id   |                                                      |
 
 - note: for download csv you must add query `start_date` and `end_date`
+- params-get-all-filter : start_date(`date`), end_date(`date`), type (`incoming`,`due_date`,`estimation`), outstanding(`true`), canceled(`true`)
+- params-get-all-sort : sort(`asc`, `desc`), sort_type(`incoming`,`due_date`)
+- params-get-all-billing-by-merchang-id: merchant_id(`merchant_no`)
+- params-download-billing-as-csv: csv(`true`)
 
 ## /api/v1/images
 
