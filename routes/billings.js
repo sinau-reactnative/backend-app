@@ -18,7 +18,7 @@ Router.route("/")
 Router.route("/csv").get(isAuthenticated, billing.downloadCSVbyDate);
 Router.route("/:id")
   .get(isAuthenticated, billing.getBillingById)
-  .patch(cpUpload, isAuthenticated, billing.updateMerchantId)
+  .patch(cpUpload, isAuthenticated, billing.updateBillingId)
   .delete(isAuthenticated, billing.deleteBillingById);
 
 module.exports = Router;

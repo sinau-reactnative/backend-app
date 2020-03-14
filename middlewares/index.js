@@ -5,8 +5,7 @@ const { sendResponse } = require("../helpers/response");
 
 module.exports = {
   isAuthenticated: (req, res, next) => {
-    const token =
-      req.headers.authorization && req.headers.authorization.split(" ")[1];
+    const token = req.headers.authorization && req.headers.authorization.split(" ")[1];
 
     if (token === undefined || token === null) {
       return sendResponse(res, 500, { authentication: "token_is_not_found" });

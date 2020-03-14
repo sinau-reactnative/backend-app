@@ -7,6 +7,8 @@ const AWS_LINK = process.env.AWS_LINK;
 module.exports = {
   createBilling: (req, res) => {
     const { merchant_id, payment_term, due_date, nominal } = req.body;
+    const user_id = req.user[0].id;
+
     let payment_status = "";
     let payment_proof = req.files["payment_proof"];
     let receipt = req.files["receipt"];
@@ -51,6 +53,19 @@ module.exports = {
         );
     `;
 
+    const logSql = `
+        INSERT INTO billing_logs
+        VALUES (
+            NULL,
+            ?,
+            ?,
+            ?,
+            ?,
+            DEFAULT,
+            DEFAULT
+        );
+    `;
+
     db.query(
       sql,
       [merchant_id, payment_term, due_date, nominal, payment_status, payment_proof, receipt],
@@ -61,6 +76,12 @@ module.exports = {
             err
           });
         } else {
+          db.query(logSql, [
+            user_id,
+            result.insertId,
+            "-",
+            `Billing dengan merchant_id = ${merchant_id} berhasil dibuat`
+          ]);
           sendResponse(res, 200, { id: result.insertId });
         }
       }
@@ -173,7 +194,7 @@ module.exports = {
           total
         };
         if (_csv) {
-          res.setHeader("Content-Type", "text/csv");
+          res.set("Content-Type", "text/csv");
           res.setHeader(
             "Content-Disposition",
             'attachment; filename="' + "billing-" + Date.now() + '.csv"'
@@ -206,17 +227,16 @@ module.exports = {
     });
   },
 
-  updateMerchantId: (req, res) => {
+  updateBillingId: (req, res) => {
     const { id } = req.params;
-    const { merchant_id, tenant_id, payment_term, due_date, nominal } = req.body;
+    const { merchant_id, payment_term, due_date, nominal } = req.body;
     let payment_status = "";
     let payment_proof = req.files["payment_proof"];
     let receipt = req.files["receipt"];
-    let data = [merchant_id, tenant_id, payment_term, due_date, nominal, payment_status];
+    let data = [merchant_id, payment_term, due_date, nominal];
     let sql = `
       UPDATE billings
       SET merchant_id = ?,
-          tenant_id = ?,
           payment_term = ?,
           due_date = ?,
           nominal = ?,
@@ -238,6 +258,7 @@ module.exports = {
       sql += `, payment_proof = ?, receipt = ? `;
 
       // ========== Insert Data Name ==========
+      data.push(payment_status);
       data.push(payment_proof);
       data.push(receipt);
       // ======================================
@@ -251,6 +272,7 @@ module.exports = {
 
       // ========== Insert Data Name ==========
       sql += `, payment_proof = ? `;
+      data.push(payment_status);
       data.push(payment_proof);
       // ======================================
     } else if (receipt) {
@@ -263,12 +285,13 @@ module.exports = {
 
       // ========== Insert Data Name ==========
       sql += `, receipt = ? `;
+      data.push(payment_status);
       data.push(receipt);
       // ======================================
     }
 
     data.push(id);
-    sql += `WHERE id = ?`;
+    sql += `, updated_at = DATE(NOW()) WHERE id = ?`;
 
     db.query(sql, data, (err, result) => {
       if (err) {

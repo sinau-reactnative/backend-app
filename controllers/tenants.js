@@ -1,3 +1,4 @@
+const moment = require("moment");
 const db = require("../configs/db");
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
@@ -5,21 +6,17 @@ const AWS_LINK = process.env.AWS_LINK;
 
 module.exports = {
   createTenant: (req, res) => {
-    const {
-      name,
-      no_ktp,
-      place_of_birth,
-      phone_number,
-      date_of_birth,
-      address
-    } = req.body;
+    const { name, no_ktp, place_of_birth, phone_number, date_of_birth, address } = req.body;
+    const user_id = req.user[0].id;
     let ktp_scan = req.file;
+
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", no_ktp);
       ktp_scan = `${AWS_LINK}${no_ktp}-ktp_scan.jpg`;
     } else {
       ktp_scan = "";
     }
+
     const sql = `
         INSERT INTO tenants 
         VALUES (
@@ -27,32 +24,38 @@ module.exports = {
             ?,
             ?,
             ?,
-            ?,
+            DATE(?),
             ?,
             ?,
             DEFAULT,
             DEFAULT
         );`;
 
+    const logSql = `
+        INSERT INTO tenant_logs
+        VALUES (
+            NULL,
+            ?,
+            ?,
+            ?,
+            ?,
+            DEFAULT,
+            DEFAULT
+        );
+    `;
+
     db.query(
       sql,
-      [
-        no_ktp,
-        name,
-        place_of_birth,
-        phone_number,
-        date_of_birth,
-        address,
-        ktp_scan
-      ],
-      (err, result) => {
+      [no_ktp, name, place_of_birth, phone_number, date_of_birth, address, ktp_scan],
+      err => {
         if (err) {
           sendResponse(res, 500, {
             response: "error_when_make_new_tenant",
             err
           });
         } else {
-          sendResponse(res, 200, { id: result.insertId });
+          db.query(logSql, [user_id, no_ktp, "-", `Tenant dengan NIK = ${no_ktp} berhasil dibuat`]);
+          sendResponse(res, 200, { id: no_ktp });
         }
       }
     );
@@ -121,39 +124,82 @@ module.exports = {
 
   updateTenantId: (req, res) => {
     const { id } = req.params;
-    const {
-      name,
-      place_of_birth,
-      phone_number,
-      date_of_birth,
-      address
-    } = req.body;
+    const { name, place_of_birth, phone_number, date_of_birth, address } = req.body;
     let ktp_scan = req.file;
     let data = [name, place_of_birth, phone_number, date_of_birth, address];
+
+    // ============== SQL Script
     let sql = `
         UPDATE tenants
         SET name = ?,
             place_of_birth = ?,
-            phone_numer = ?,
-            date_of_birth = ?,
+            phone_number = ?,
+            date_of_birth = DATE(?),
             address = ?       
     `;
+    const getOld = `SELECT * FROM tenants WHERE no_ktp = ?;`;
+    // ==========================
+
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", id);
       ktp_scan = `${AWS_LINK}${id}-ktp_scan.jpg`;
-      sql += `, ktp_scan = ?`;
+      sql += `, ktp_scan = ?,`;
       data.push(ktp_scan);
     }
     data.push(id);
-    sql += `WHERE no_ktp = ?;`;
+    sql += ` updated_at = DATE(NOW()) WHERE no_ktp = ?;`;
 
-    db.query(sql, data, (err, result) => {
-      if (err) {
-        sendResponse(res, 500, { response: "error_when_update_tenant", err });
-      } else {
-        sendResponse(res, 200, result);
-      }
+    const getOldSql = new Promise((resolve, reject) => {
+      db.query(getOld, [id], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
     });
+
+    const updateNewSql = new Promise((resolve, reject) => {
+      db.query(sql, data, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    Promise.all([getOldSql, updateNewSql])
+      .then(result => {
+        const oldData = {
+          ...result[0][0],
+          date_of_birth: moment(result[0][0].date_of_birth).format("YYYY-MM-DD")
+        };
+
+        const newData = {
+          name,
+          place_of_birth,
+          phone_number,
+          date_of_birth,
+          address,
+          ktp_scan
+        };
+
+        let beforeChange = "";
+        let afterChange = "";
+
+        if (oldData.name !== newData.name) {
+          beforeChange = `name: ${oldData.name}\n`;
+          afterChange = `name: ${newData.name}\n`;
+        }
+
+        if (oldData.name !== newData.name) {
+          beforeChange = `name: ${oldData.name}\n`;
+          afterChange = `name: ${newData.name}\n`;
+        }
+
+        sendResponse(res, 200, { result: result[1] });
+      })
+      .catch(err => {
+        sendResponse(res, 500, {
+          response: "error_when_update_tenant",
+          err
+        });
+      });
   },
 
   deleteTenantId: (req, res) => {

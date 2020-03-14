@@ -17,8 +17,9 @@ module.exports = {
       price_per_meter,
       total_price
     } = req.body;
-    let _tenantId =
-      merchant_status === "bebas" ? "0000000000000000" : tenant_id;
+    const user_id = req.user[0].id;
+
+    let _tenantId = merchant_status === "bebas" ? "0000000000000000" : tenant_id;
     let attachment = req.files;
     let _data = [
       merchant_no,
@@ -31,6 +32,7 @@ module.exports = {
       price_per_meter,
       total_price
     ];
+
     if (attachment) {
       uploadFile(attachment["attachment_1"][0], "attachment_1", merchant_no);
       uploadFile(attachment["attachment_2"][0], "attachment_2", merchant_no);
@@ -42,6 +44,7 @@ module.exports = {
       _data.push("");
       _data.push("");
     }
+
     const sql = `
         INSERT INTO merchants
         VALUES (
@@ -61,6 +64,19 @@ module.exports = {
         );
     `;
 
+    const logSql = `
+        INSERT INTO merchant_logs
+        VALUES (
+            NULL,
+            ?,
+            ?,
+            ?,
+            ?,
+            DEFAULT,
+            DEFAULT
+        );
+    `;
+
     db.query(sql, _data, err => {
       if (err) {
         sendResponse(res, 500, {
@@ -68,6 +84,12 @@ module.exports = {
           err
         });
       } else {
+        db.query(logSql, [
+          user_id,
+          merchant_no,
+          "-",
+          `Merchant dengan nomer = ${merchant_no} berhasil dibuat`
+        ]);
         sendResponse(res, 200, { id: merchant_no });
       }
     });
@@ -164,8 +186,7 @@ module.exports = {
       price_per_meter,
       total_price
     } = req.body;
-    let _tenantId =
-      merchant_status === "bebas" ? "0000000000000000" : tenant_id;
+    let _tenantId = merchant_status === "bebas" ? "0000000000000000" : tenant_id;
     let attachment = req.files;
     let data = [
       _tenantId,
@@ -189,19 +210,22 @@ module.exports = {
           total_price = ?
     `;
 
-    if (attachment) {
+    if (attachment["attachment_1"]) {
       uploadFile(attachment["attachment_1"][0], "attachment_1", id);
-      uploadFile(attachment["attachment_2"][0], "attachment_2", id);
       const attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
-      const attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
-      sql += `, attachment_1 = ?, attachment_2 = ? `;
+      sql += `, attachment_1 = ? `;
       data.push(attachment_1);
-      data.push(attachment_2);
-      data.push(id);
-    } else {
-      data.push(id);
     }
-    sql += `WHERE merchant_no = ?`;
+
+    if (attachment["attachment_2"]) {
+      uploadFile(attachment["attachment_2"][0], "attachment_2", id);
+      const attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
+      sql += `, attachment_2 = ? `;
+      data.push(attachment_2);
+    }
+
+    data.push(id);
+    sql += `, updated_at = DATE(NOW()) WHERE merchant_no = ?`;
 
     db.query(sql, data, (err, result) => {
       if (err) {
