@@ -69,3 +69,11 @@
 | -------------------- | ---- | ----------------------------- | --------------------------- |
 | `/api/v1/images/`    | POST | Create tenant                 | `merchant_id`, `id`(number) |
 | `/api/v1/images/:id` | GET  | Get all images by Merchant Id |                             |
+
+## /api/v1/logs
+
+| Endpoint                    | HTTP | Description                 | Body |
+| --------------------------- | ---- | --------------------------- | ---- |
+| `/api/v1/logs/merchant/:id` | GET  | Get all logs by Merchant Id |      |
+| `/api/v1/logs/tenant/:id`   | GET  | Get all logs by Tenant Id   |      |
+| `/api/v1/logs/billing/:id`  | GET  | Get all logs by Billing Id  |      |
