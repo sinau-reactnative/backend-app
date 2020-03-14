@@ -1,8 +1,9 @@
 const db = require("../configs/db");
-const { sendResponse } = require("../helpers/response");
-
-const { uploadFile } = require("../helpers/upload");
 const AWS_LINK = process.env.AWS_LINK;
+
+const { sendResponse } = require("../helpers/response");
+const { uploadFile } = require("../helpers/upload");
+const { merchantLogs } = require("../helpers/updateLogs");
 
 module.exports = {
   createMerchant: (req, res) => {
@@ -176,6 +177,7 @@ module.exports = {
 
   updateMerchantId: (req, res) => {
     const { id } = req.params;
+    const user_id = req.user[0].id;
     const {
       tenant_id,
       merchant_status,
@@ -186,18 +188,23 @@ module.exports = {
       price_per_meter,
       total_price
     } = req.body;
+
     let _tenantId = merchant_status === "bebas" ? "0000000000000000" : tenant_id;
     let attachment = req.files;
+    let attachment_1;
+    let attachment_2;
     let data = [
       _tenantId,
       merchant_status,
-      floor_position,
+      Number(floor_position),
       type_of_sale,
       type_of_merchant,
       merchant_space,
       price_per_meter,
       total_price
     ];
+
+    // ============== SQL Script
     let sql = `
       UPDATE merchants
       SET tenant_id = ?,
@@ -209,17 +216,19 @@ module.exports = {
           price_per_meter = ?,
           total_price = ?
     `;
+    const getOld = `SELECT * FROM merchants WHERE merchant_no = ?;`;
+    // ==========================
 
     if (attachment["attachment_1"]) {
       uploadFile(attachment["attachment_1"][0], "attachment_1", id);
-      const attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
+      attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
       sql += `, attachment_1 = ? `;
       data.push(attachment_1);
     }
 
     if (attachment["attachment_2"]) {
       uploadFile(attachment["attachment_2"][0], "attachment_2", id);
-      const attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
+      attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
       sql += `, attachment_2 = ? `;
       data.push(attachment_2);
     }
@@ -227,13 +236,52 @@ module.exports = {
     data.push(id);
     sql += `, updated_at = DATE(NOW()) WHERE merchant_no = ?`;
 
-    db.query(sql, data, (err, result) => {
-      if (err) {
-        sendResponse(res, 500, { response: "error_when_update_merchant", err });
-      } else {
-        sendResponse(res, 200, result);
-      }
+    const getOldSql = new Promise((resolve, reject) => {
+      db.query(getOld, [id], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
     });
+
+    const updateNewSql = new Promise((resolve, reject) => {
+      db.query(sql, data, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    Promise.all([getOldSql, updateNewSql])
+      .then(async result => {
+        const oldData = result[0][0];
+
+        let newData = {
+          tenant_id: _tenantId,
+          merchant_status,
+          floor_position,
+          type_of_sale,
+          type_of_merchant,
+          merchant_space,
+          price_per_meter,
+          total_price
+        };
+
+        if (attachment_1) {
+          newData["attachment_1"] = attachment_1;
+        }
+
+        if (attachment_2) {
+          newData["attachment_2"] = attachment_2;
+        }
+
+        await merchantLogs(user_id, id, newData, oldData);
+        await sendResponse(res, 200, { result: result[1] });
+      })
+      .catch(err => {
+        sendResponse(res, 500, {
+          response: "error_when_update_tenant",
+          err
+        });
+      });
   },
 
   deleteMerchantById: (req, res) => {

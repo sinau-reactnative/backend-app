@@ -1,8 +1,11 @@
-const db = require("../configs/db");
+const moment = require("moment");
 const stringify = require("csv-stringify");
+const db = require("../configs/db");
+const AWS_LINK = process.env.AWS_LINK;
+
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
-const AWS_LINK = process.env.AWS_LINK;
+const { billingLogs } = require("../helpers/updateLogs");
 
 module.exports = {
   createBilling: (req, res) => {
@@ -230,10 +233,14 @@ module.exports = {
   updateBillingId: (req, res) => {
     const { id } = req.params;
     const { merchant_id, payment_term, due_date, nominal } = req.body;
+    const user_id = req.user[0].id;
+
     let payment_status = "";
     let payment_proof = req.files["payment_proof"];
     let receipt = req.files["receipt"];
     let data = [merchant_id, payment_term, due_date, nominal];
+
+    // ============== SQL Script
     let sql = `
       UPDATE billings
       SET merchant_id = ?,
@@ -242,6 +249,8 @@ module.exports = {
           nominal = ?,
           payment_status = ?
     `;
+    const getOld = `SELECT * FROM billings WHERE id = ?;`;
+    // ==========================
 
     if (payment_proof && receipt) {
       // ============ Upload Image ============
@@ -293,13 +302,52 @@ module.exports = {
     data.push(id);
     sql += `, updated_at = DATE(NOW()) WHERE id = ?`;
 
-    db.query(sql, data, (err, result) => {
-      if (err) {
-        sendResponse(res, 500, { response: "error_when_update_merchant", err });
-      } else {
-        sendResponse(res, 200, result);
-      }
+    const getOldSql = new Promise((resolve, reject) => {
+      db.query(getOld, [id], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
     });
+
+    const updateNewSql = new Promise((resolve, reject) => {
+      db.query(sql, data, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    Promise.all([getOldSql, updateNewSql])
+      .then(async result => {
+        const oldData = {
+          ...result[0][0],
+          due_date: moment(result[0][0].due_date).format("YYYY-MM-DD")
+        };
+
+        let newData = {
+          merchant_id,
+          payment_term,
+          due_date,
+          nominal,
+          payment_status
+        };
+
+        if (payment_proof) {
+          newData["payment_proof"] = payment_proof;
+        }
+
+        if (receipt) {
+          newData["receipt"] = receipt;
+        }
+
+        await billingLogs(user_id, id, newData, oldData);
+        await sendResponse(res, 200, { result: result[1] });
+      })
+      .catch(err => {
+        sendResponse(res, 500, {
+          response: "error_when_update_billing",
+          err
+        });
+      });
   },
 
   deleteBillingById: (req, res) => {

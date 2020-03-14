@@ -1,8 +1,10 @@
 const moment = require("moment");
 const db = require("../configs/db");
+const AWS_LINK = process.env.AWS_LINK;
+
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
-const AWS_LINK = process.env.AWS_LINK;
+const { tenantLogs } = require("../helpers/updateLogs");
 
 module.exports = {
   createTenant: (req, res) => {
@@ -124,6 +126,8 @@ module.exports = {
 
   updateTenantId: (req, res) => {
     const { id } = req.params;
+    const user_id = req.user[0].id;
+
     const { name, place_of_birth, phone_number, date_of_birth, address } = req.body;
     let ktp_scan = req.file;
     let data = [name, place_of_birth, phone_number, date_of_birth, address];
@@ -164,7 +168,7 @@ module.exports = {
     });
 
     Promise.all([getOldSql, updateNewSql])
-      .then(result => {
+      .then(async result => {
         const oldData = {
           ...result[0][0],
           date_of_birth: moment(result[0][0].date_of_birth).format("YYYY-MM-DD")
@@ -178,21 +182,8 @@ module.exports = {
           address,
           ktp_scan
         };
-
-        let beforeChange = "";
-        let afterChange = "";
-
-        if (oldData.name !== newData.name) {
-          beforeChange = `name: ${oldData.name}\n`;
-          afterChange = `name: ${newData.name}\n`;
-        }
-
-        if (oldData.name !== newData.name) {
-          beforeChange = `name: ${oldData.name}\n`;
-          afterChange = `name: ${newData.name}\n`;
-        }
-
-        sendResponse(res, 200, { result: result[1] });
+        await tenantLogs(user_id, id, newData, oldData);
+        await sendResponse(res, 200, { result: result[1] });
       })
       .catch(err => {
         sendResponse(res, 500, {
