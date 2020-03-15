@@ -62,6 +62,7 @@
 - params-get-all-sort : sort(`asc`, `desc`), sort_type(`incoming`,`due_date`)
 - params-get-all-billing-by-merchang-id: merchant_id(`merchant_no`)
 - params-download-billing-as-csv: csv(`true`)
+- params-download-billing-as-xls: xls(`true`)
 
 ## /api/v1/images
 
