@@ -130,8 +130,8 @@ module.exports = {
     `;
 
     if (start_date && end_date && type === "incoming") {
-      sql += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = 'sudah_validasi' `;
-      total += `WHERE created_at BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
+      sql += `WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = 'sudah_validasi' `;
+      total += `WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
     } else if (start_date && end_date && type === "due_date") {
       sql += `WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
       total += `WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')`;
@@ -141,6 +141,12 @@ module.exports = {
         (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
         FROM billings
         WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
+    } else if (start_date && end_date && type === "summary") {
+      sql = `
+        SELECT *, 
+        (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
+        FROM billings
+        WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = "sudah_validasi" `;
     } else if (_outstanding !== null) {
       sql += `WHERE payment_status = 'outstanding' `;
       total += `WHERE payment_status = 'outstanding' `;
