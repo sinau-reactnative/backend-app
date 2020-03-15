@@ -7,14 +7,14 @@ module.exports = {
     const { id } = req.params;
 
     const sql = `
-        SELECT L*, U.fullname, U.email, U.role
+        SELECT L.*, U.fullname, U.email, U.role
         FROM tenant_logs L
         JOIN users U
         ON L.user_id = U.id
         WHERE L.tenant_id = ?
         ORDER BY L.created_at DESC;
-        ;
     `;
+
     let total = `SELECT COUNT(*) as total FROM tenant_logs WHERE tenant_id = ? `;
 
     const getSql = new Promise((resolve, reject) => {
