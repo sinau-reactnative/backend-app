@@ -142,6 +142,28 @@ INSERT INTO billings VALUES
     'http://link-ke-kwitansi',
     DATE('2020-02-21'),
     DEFAULT
+),(
+  NULL,
+  'AB20100102',
+  'Pembayaran 3',
+  '2020-03-01',
+  '350000',
+  'outstanding',
+  'http://link-ke-payment-proof',
+  'http://link-ke-kwitansi',
+  DATE('2020-02-21'),
+  DEFAULT
+),(
+  NULL,
+  'AB20100102',
+  'Pembayaran 4',
+  '2020-03-10',
+  '350000',
+  'canceled',
+  'http://link-ke-payment-proof',
+  'http://link-ke-kwitansi',
+  DATE('2020-02-21'),
+  DEFAULT
 );
 `;
 
