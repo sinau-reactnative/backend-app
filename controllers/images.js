@@ -9,15 +9,29 @@ module.exports = {
     const { id, merchant_id } = req.body;
     uploadFile(attachment, `lampiran_${id}`, merchant_id);
     attachment = `${AWS_LINK}${merchant_id}-lampiran_${id}.jpg`;
-    let sql = `INSERT INTO images VALUES (NULL, ?, ?, DEFAULT, DEFAULT);`;
-    db.query(sql, [merchant_id, attachment], (err, result) => {
+    const getUrl = `SELECT url FROM images WHERE url = '${attachment}';`;
+    db.query(getUrl, [], (err, result) => {
       if (err) {
         sendResponse(res, 500, {
           response: "error_when_upload_new_image",
           err
         });
       } else {
-        sendResponse(res, 200, { id: result.insertId });
+        if (result.length > 0) {
+          sendResponse(res, 200, "successfully_update_image");
+        } else {
+          let sql = `INSERT INTO images VALUES (NULL, ?, ?, DEFAULT, DEFAULT);`;
+          db.query(sql, [merchant_id, attachment], (err, result) => {
+            if (err) {
+              sendResponse(res, 500, {
+                response: "error_when_upload_new_image",
+                err
+              });
+            } else {
+              sendResponse(res, 200, { id: result.insertId });
+            }
+          });
+        }
       }
     });
   },
