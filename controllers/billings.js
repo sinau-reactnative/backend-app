@@ -6,6 +6,7 @@ const AWS_LINK = process.env.AWS_LINK;
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
 const { billingLogs } = require("../helpers/updateLogs");
+const { exportToExcel } = require("../helpers/export");
 
 module.exports = {
   createBilling: (req, res) => {
@@ -103,7 +104,8 @@ module.exports = {
       merchant_id,
       outstanding,
       canceled,
-      csv
+      csv,
+      xls
       // summary
     } = req.query;
 
@@ -123,6 +125,7 @@ module.exports = {
 
     // Download CSV ?
     let _csv = csv ? (csv === "true" ? true : false) : false;
+    let _xls = xls ? (xls === "true" ? true : false) : false;
 
     let total = `SELECT COUNT(id) as total FROM billings `;
     let sql = `
@@ -141,12 +144,14 @@ module.exports = {
         (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
         FROM billings
         WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
+      total += `WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}') `;
     } else if (start_date && end_date && type === "summary") {
       sql = `
         SELECT *, 
         (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
         FROM billings
         WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = "sudah_validasi" `;
+      total += `WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = "sudah_validasi" `;
     } else if (_outstanding !== null) {
       sql += `WHERE payment_status = 'outstanding' `;
       total += `WHERE payment_status = 'outstanding' `;
@@ -164,17 +169,6 @@ module.exports = {
     if (merchant_id) {
       sql = `SELECT * FROM billings WHERE merchant_id = '${merchant_id}' ORDER BY created_at ASC`;
     }
-
-    // if (type === "summary"){
-    //   let d = new Date()
-    //   if(summary === "day"){
-    //     // let today = d.get
-    //     sql = `SELECT *,
-    //           (SELECT SUM(nominal) FROM billings WHERE created_at = DATE('${d}')) as TOTAL
-    //           FROM billings
-    //           WHERE created_at = DATE('${d}')`
-    //   } else if (summa)
-    // }
 
     sql += ` LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
 
@@ -209,6 +203,8 @@ module.exports = {
             'attachment; filename="' + "billing-" + Date.now() + '.csv"'
           );
           stringify(result[0], { header: true }).pipe(res);
+        } else if (_xls) {
+          exportToExcel(res, result[0]);
         } else {
           sendResponse(res, 200, { result: result[0], pagination });
         }

@@ -36,5 +36,21 @@ module.exports = {
         sendResponse(res, 200, result);
       }
     });
+  },
+
+  deleteImageById: (req, res) => {
+    const { id } = req.params;
+    const sql = `DELETE FROM images WHERE id = ? ;`;
+
+    db.query(sql, [id], (err, result) => {
+      if (err) {
+        sendResponse(res, 500, {
+          response: "error_when_delete_images",
+          err
+        });
+      } else {
+        sendResponse(res, 200, result);
+      }
+    });
   }
 };

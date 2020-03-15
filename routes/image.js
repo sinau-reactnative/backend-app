@@ -7,12 +7,10 @@ const upload = multer();
 const { isAuthenticated } = require("../middlewares");
 const image = require("../controllers/images");
 
-Router.route("/").post(
-  isAuthenticated,
-  upload.single("attachment"),
-  image.uploadNewImage
-);
+Router.route("/").post(isAuthenticated, upload.single("attachment"), image.uploadNewImage);
 
-Router.route("/:id").get(isAuthenticated, image.getImageByMerchantId);
+Router.route("/:id")
+  .get(isAuthenticated, image.getImageByMerchantId)
+  .delete(isAuthenticated, image.deleteImageById);
 
 module.exports = Router;

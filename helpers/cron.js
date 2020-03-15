@@ -7,10 +7,12 @@ const month = d.getMonth() + 1 ? "0" + (d.getMonth() + 1) : date;
 const year = d.getFullYear();
 const fullDate = `${year}-${month}-${date}`;
 
-module.exports = schedule.scheduleJob("59 59 23 * * *", function() {
+module.exports = schedule.scheduleJob("59 23 23 * * *", function() {
   let sql = `
           UPDATE billings
-          SET payment_status = "outstanding"
+          SET 
+              payment_status = CASE WHEN payment_status = "sudah_validasi" THEN "sudah_validasi" ELSE "outstanding" END,
+              updated_at = DATE(NOW())
           WHERE due_date = DATE('${fullDate}');
   `;
   db.query(sql, [], err => {
