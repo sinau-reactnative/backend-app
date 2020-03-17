@@ -249,7 +249,7 @@ module.exports = {
           payment_term = ?,
           due_date = ?,
           nominal = ?,
-          payment_status = ?
+          payment_status = ?,
     `;
     const getOld = `SELECT * FROM billings WHERE id = ?;`;
     // ==========================
@@ -266,7 +266,7 @@ module.exports = {
       // ======================================
 
       payment_status = "sudah_validasi";
-      sql += `, payment_proof = ?, receipt = ? `;
+      sql += `payment_proof = ?, receipt = ?, `;
 
       // ========== Insert Data Name ==========
       data.push(payment_status);
@@ -282,7 +282,7 @@ module.exports = {
       payment_status = "menunggu_validasi";
 
       // ========== Insert Data Name ==========
-      sql += `, payment_proof = ? `;
+      sql += `payment_proof = ?, `;
       data.push(payment_status);
       data.push(payment_proof);
       // ======================================
@@ -295,14 +295,15 @@ module.exports = {
       payment_status = "menunggu_validasi";
 
       // ========== Insert Data Name ==========
-      sql += `, receipt = ? `;
+      sql += `receipt = ?, `;
       data.push(payment_status);
       data.push(receipt);
       // ======================================
     }
 
     data.push(id);
-    sql += `, updated_at = DATE(NOW()) WHERE id = ?`;
+    sql += `updated_at = DATE(NOW()) 
+            WHERE id = ? ;`;
 
     const getOldSql = new Promise((resolve, reject) => {
       db.query(getOld, [id], (err, result) => {

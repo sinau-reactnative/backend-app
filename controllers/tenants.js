@@ -147,11 +147,11 @@ module.exports = {
     if (ktp_scan) {
       uploadFile(ktp_scan, "ktp_scan", id);
       ktp_scan = `${AWS_LINK}${id}-ktp_scan.jpg`;
-      sql += `, ktp_scan = ?,`;
+      sql += `, ktp_scan = ?`;
       data.push(ktp_scan);
     }
     data.push(id);
-    sql += ` updated_at = DATE(NOW()) WHERE no_ktp = ?;`;
+    sql += `, updated_at = DATE(NOW()) WHERE no_ktp = ?;`;
 
     const getOldSql = new Promise((resolve, reject) => {
       db.query(getOld, [id], (err, result) => {

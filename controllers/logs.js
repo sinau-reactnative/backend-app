@@ -105,15 +105,15 @@ module.exports = {
     const { id } = req.params;
 
     const sql = `
-        SELECT *, U.fullname, U.email, U.role
+        SELECT L.*, U.fullname, U.email, U.role
         FROM billing_logs L
         JOIN users U
         ON L.user_id = U.id
-        WHERE L.id = ?
+        WHERE L.billing_id = ?
         ORDER BY L.created_at DESC;
     `;
 
-    let total = `SELECT COUNT(*) as total FROM billing_logs WHERE id = ? `;
+    let total = `SELECT COUNT(*) as total FROM billing_logs WHERE billing_id = ? `;
 
     const getSql = new Promise((resolve, reject) => {
       db.query(sql, [id], (err, result) => {
