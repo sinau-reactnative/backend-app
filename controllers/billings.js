@@ -299,6 +299,9 @@ module.exports = {
       data.push(payment_status);
       data.push(receipt);
       // ======================================
+    } else {
+      payment_status = "menunggu_validasi";
+      data.push(payment_status);
     }
 
     data.push(id);

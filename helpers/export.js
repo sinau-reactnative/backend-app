@@ -6,7 +6,7 @@ module.exports = {
       headerDark: {
         fill: {
           fgColor: {
-            rgb: "FF00FF00"
+            rgb: "60E38E00"
           }
         },
         font: {

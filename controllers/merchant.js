@@ -101,8 +101,8 @@ module.exports = {
     let total = `SELECT COUNT(*) as total FROM merchants M `;
     let sql = `
     SELECT *, T.name,
-           (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) AS progress_nominal,
-           ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) / (M.total_price)) * 100),2) as progress_billing
+           (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no AND B.payment_status = "sudah_validasi") AS progress_nominal,
+           ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no AND B.payment_status = "sudah_validasi") / (M.total_price)) * 100),2) as progress_billing
            FROM merchants M
            JOIN tenants T
            ON M.tenant_id = T.no_ktp
