@@ -90,8 +90,8 @@ CREATE TABLE tenant_logs (
     after_changed varchar(250),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (tenant_id) REFERENCES tenants(no_ktp)
+    FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(no_ktp) on DELETE CASCADE
 );
 `;
 
@@ -104,8 +104,8 @@ CREATE TABLE merchant_logs (
     after_changed varchar(250),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (merchant_id) REFERENCES merchants(merchant_no)
+    FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE,
+    FOREIGN KEY (merchant_id) REFERENCES merchants(merchant_no) on DELETE CASCADE
 );
 `;
 
@@ -118,8 +118,8 @@ CREATE TABLE billing_logs (
     after_changed varchar(250),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp,
-    FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (billing_id) REFERENCES billings(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) on DELETE CASCADE,
+    FOREIGN KEY (billing_id) REFERENCES billings(id) on DELETE CASCADE
 );
 `;
 
