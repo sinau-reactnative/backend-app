@@ -21,7 +21,10 @@ module.exports = {
     const user_id = req.user[0].id;
 
     let _tenantId = merchant_status === "bebas" ? "0000000000000000" : tenant_id;
-    let attachment = req.files;
+    let attachment_1 = req.files["attachment_1"];
+    let attachment_2 = req.files["attachment_2"];
+    let _attachment_1;
+    let _attachment_2;
     let _data = [
       merchant_no,
       _tenantId,
@@ -34,13 +37,25 @@ module.exports = {
       total_price
     ];
 
-    if (attachment) {
-      uploadFile(attachment["attachment_1"][0], "attachment_1", merchant_no);
-      uploadFile(attachment["attachment_2"][0], "attachment_2", merchant_no);
-      const attachment_1 = `${AWS_LINK}${merchant_no}-attachment_1.jpg`;
-      const attachment_2 = `${AWS_LINK}${merchant_no}-attachment_2.jpg`;
-      _data.push(attachment_1);
-      _data.push(attachment_2);
+    if (attachment_1 && attachment_2) {
+      uploadFile(attachment_1[0], "attachment_1", merchant_no);
+      uploadFile(attachment_2[0], "attachment_2", merchant_no);
+
+      _attachment_1 = `${AWS_LINK}${merchant_no}-attachment_1.jpg`;
+      _attachment_2 = `${AWS_LINK}${merchant_no}-attachment_2.jpg`;
+
+      _data.push(_attachment_1);
+      _data.push(_attachment_2);
+    } else if (attachment_1) {
+      uploadFile(attachment_1[0], "attachment_1", merchant_no);
+      _attachment_1 = `${AWS_LINK}${merchant_no}-attachment_1.jpg`;
+      _data.push(_attachment_1);
+      _data.push("");
+    } else if (attachment_2) {
+      uploadFile(attachment_2[0], "attachment_2", merchant_no);
+      _attachment_2 = `${AWS_LINK}${merchant_no}-attachment_2.jpg`;
+      _data.push(_attachment_2);
+      _data.push("");
     } else {
       _data.push("");
       _data.push("");
@@ -190,9 +205,11 @@ module.exports = {
     } = req.body;
 
     let _tenantId = merchant_status === "bebas" ? "0000000000000000" : tenant_id;
-    let attachment = req.files;
-    let attachment_1;
-    let attachment_2;
+    let attachment_1 = req.files["attachment_1"];
+    let attachment_2 = req.files["attachment_2"];
+    let _attachment_1;
+    let _attachment_2;
+
     let data = [
       _tenantId,
       merchant_status,
@@ -219,18 +236,33 @@ module.exports = {
     const getOld = `SELECT * FROM merchants WHERE merchant_no = ?;`;
     // ==========================
 
-    if (attachment["attachment_1"]) {
-      uploadFile(attachment["attachment_1"][0], "attachment_1", id);
-      attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
-      sql += `, attachment_1 = ? `;
-      data.push(attachment_1);
-    }
+    if (attachment_1 && attachment_2) {
+      console.log(1);
+      uploadFile(attachment_1[0], "attachment_1", id);
+      uploadFile(attachment_2[0], "attachment_2", id);
 
-    if (attachment["attachment_2"]) {
-      uploadFile(attachment["attachment_2"][0], "attachment_2", id);
-      attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
+      _attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
+      _attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
+
+      sql += `, attachment_1 = ? `;
       sql += `, attachment_2 = ? `;
-      data.push(attachment_2);
+
+      data.push(_attachment_1);
+      data.push(_attachment_2);
+    } else if (attachment_1) {
+      console.log(2);
+      uploadFile(attachment_1[0], "attachment_1", id);
+      _attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
+      sql += `, attachment_1 = ? , attachment_2 = ?`;
+      data.push(_attachment_1);
+      data.push("");
+    } else if (attachment_2) {
+      console.log(3);
+      uploadFile(attachment_2[0], "attachment_2", id);
+      _attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
+      sql += `, attachment_1 = ? , attachment_2 = ?`;
+      data.push("");
+      data.push(_attachment_2);
     }
 
     data.push(id);
