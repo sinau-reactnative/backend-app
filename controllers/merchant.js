@@ -237,7 +237,6 @@ module.exports = {
     // ==========================
 
     if (attachment_1 && attachment_2) {
-      console.log(1);
       uploadFile(attachment_1[0], "attachment_1", id);
       uploadFile(attachment_2[0], "attachment_2", id);
 
@@ -250,18 +249,14 @@ module.exports = {
       data.push(_attachment_1);
       data.push(_attachment_2);
     } else if (attachment_1) {
-      console.log(2);
       uploadFile(attachment_1[0], "attachment_1", id);
       _attachment_1 = `${AWS_LINK}${id}-attachment_1.jpg`;
-      sql += `, attachment_1 = ? , attachment_2 = ?`;
+      sql += `, attachment_1 = ?`;
       data.push(_attachment_1);
-      data.push("");
     } else if (attachment_2) {
-      console.log(3);
       uploadFile(attachment_2[0], "attachment_2", id);
       _attachment_2 = `${AWS_LINK}${id}-attachment_2.jpg`;
-      sql += `, attachment_1 = ? , attachment_2 = ?`;
-      data.push("");
+      sql += `, attachment_2 = ?`;
       data.push(_attachment_2);
     }
 
