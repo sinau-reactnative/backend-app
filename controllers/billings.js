@@ -254,89 +254,81 @@ module.exports = {
     const getOld = `SELECT * FROM billings WHERE id = ?;`;
     // ==========================
 
-    if (payment_proof && receipt) {
-      // ============ Upload Image ============
-      uploadFile(payment_proof[0], "payment_proof", merchant_id);
-      uploadFile(receipt[0], "receipt", merchant_id);
-      // ======================================
-
-      // ============= Data Name ==============
-      payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
-      receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
-      // ======================================
-
-      payment_status = "sudah_validasi";
-      sql += `payment_proof = ?, receipt = ?, `;
-
-      // ========== Insert Data Name ==========
-      data.push(payment_status);
-      data.push(payment_proof);
-      data.push(receipt);
-      // ======================================
-    } else if (payment_proof) {
-      // ============ Upload Image ============
-      uploadFile(payment_proof[0], "payment_proof", merchant_id);
-      payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
-      // ======================================
-
-      payment_status = "menunggu_validasi";
-
-      // ========== Insert Data Name ==========
-      sql += `payment_proof = ?, `;
-      data.push(payment_status);
-      data.push(payment_proof);
-      // ======================================
-    } else if (receipt) {
-      // ============ Upload Image ============
-      uploadFile(receipt[0], "receipt", merchant_id);
-      receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
-      // ======================================
-
-      payment_status = "menunggu_validasi";
-
-      // ========== Insert Data Name ==========
-      sql += `receipt = ?, `;
-      data.push(payment_status);
-      data.push(receipt);
-      // ======================================
-    } else {
-      payment_status = "menunggu_validasi";
-      data.push(payment_status);
-    }
-
-    data.push(id);
-    sql += `updated_at = DATE(NOW()) 
-            WHERE id = ? ;`;
-
-    const getOldSql = new Promise((resolve, reject) => {
-      db.query(getOld, [id], (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-      });
-    });
-
-    const updateNewSql = new Promise((resolve, reject) => {
-      db.query(sql, data, (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-      });
-    });
-
-    Promise.all([getOldSql, updateNewSql])
-      .then(async result => {
+    db.query(getOld, [id], (err, result) => {
+      if (err) {
+        sendResponse(res, 500, { response: "error_when_get_old_data", err });
+      } else {
         const oldData = {
-          ...result[0][0],
-          due_date: moment(result[0][0].due_date).format("YYYY-MM-DD")
+          ...result[0],
+          due_date: moment(result[0].due_date).format("YYYY-MM-DD")
         };
 
         let newData = {
           merchant_id,
           payment_term,
           due_date,
-          nominal,
-          payment_status
+          nominal
         };
 
+        if (payment_proof && receipt) {
+          // ============ Upload Image ============
+          uploadFile(payment_proof[0], "payment_proof", merchant_id);
+          uploadFile(receipt[0], "receipt", merchant_id);
+          // ======================================
+
+          // ============= Data Name ==============
+          payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
+          receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
+          // ======================================
+
+          payment_status = "sudah_validasi";
+          sql += `payment_proof = ?, receipt = ?, `;
+
+          // ========== Insert Data Name ==========
+          data.push(payment_status);
+          data.push(payment_proof);
+          data.push(receipt);
+          // ======================================
+        } else if (payment_proof) {
+          // ============ Upload Image ============
+          uploadFile(payment_proof[0], "payment_proof", merchant_id);
+          payment_proof = `${AWS_LINK}${merchant_id}-payment_proof.jpg`;
+          // ======================================
+
+          payment_status = oldData.receipt.length > 0 ? "sudah_validasi" : "menunggu_validasi";
+
+          // ========== Insert Data Name ==========
+          sql += `payment_proof = ?, `;
+          data.push(payment_status);
+          data.push(payment_proof);
+          // ======================================
+        } else if (receipt) {
+          // ============ Upload Image ============
+          uploadFile(receipt[0], "receipt", merchant_id);
+          receipt = `${AWS_LINK}${merchant_id}-receipt.jpg`;
+          // ======================================
+
+          payment_status =
+            oldData.payment_proof.length > 0 ? "sudah_validasi" : "menunggu_validasi";
+
+          // ========== Insert Data Name ==========
+          sql += `receipt = ?, `;
+          data.push(payment_status);
+          data.push(receipt);
+          // ======================================
+        } else {
+          payment_status =
+            oldData.payment_proof.length > 0 && oldData.receipt.length > 0
+              ? "sudah_validasi"
+              : "menunggu_validasi";
+          data.push(payment_status);
+        }
+
+        data.push(id);
+        sql += `updated_at = DATE(NOW()) 
+            WHERE id = ? ;`;
+
+        newData["payment_status"] = payment_status;
         if (payment_proof) {
           newData["payment_proof"] = payment_proof;
         }
@@ -345,15 +337,63 @@ module.exports = {
           newData["receipt"] = receipt;
         }
 
-        await billingLogs(user_id, id, newData, oldData);
-        await sendResponse(res, 200, { result: result[1] });
-      })
-      .catch(err => {
-        sendResponse(res, 500, {
-          response: "error_when_update_billing",
-          err
+        db.query(sql, data, (err, result) => {
+          if (err) {
+            sendResponse(res, 500, { response: "error_when_update_billings", err });
+          } else {
+            billingLogs(user_id, id, newData, oldData);
+            sendResponse(res, 200, result);
+          }
         });
-      });
+      }
+    });
+
+    // const getOldSql = new Promise((resolve, reject) => {
+    //   db.query(getOld, [id], (err, result) => {
+    //     if (err) reject(err);
+    //     else resolve(result);
+    //   });
+    // });
+
+    // const updateNewSql = new Promise((resolve, reject) => {
+    //   db.query(sql, data, (err, result) => {
+    //     if (err) reject(err);
+    //     else resolve(result);
+    //   });
+    // });
+
+    // Promise.all([getOldSql, updateNewSql])
+    //   .then(async result => {
+    //     const oldData = {
+    //       ...result[0][0],
+    //       due_date: moment(result[0][0].due_date).format("YYYY-MM-DD")
+    //     };
+
+    //     let newData = {
+    //       merchant_id,
+    //       payment_term,
+    //       due_date,
+    //       nominal,
+    //       payment_status
+    //     };
+
+    //     if (payment_proof) {
+    //       newData["payment_proof"] = payment_proof;
+    //     }
+
+    //     if (receipt) {
+    //       newData["receipt"] = receipt;
+    //     }
+
+    //     await billingLogs(user_id, id, newData, oldData);
+    //     await sendResponse(res, 200, { result: result[1] });
+    //   })
+    //   .catch(err => {
+    //     sendResponse(res, 500, {
+    //       response: "error_when_update_billing",
+    //       err
+    //     });
+    //   });
   },
 
   deleteBillingById: (req, res) => {
