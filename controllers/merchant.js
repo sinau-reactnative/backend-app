@@ -114,7 +114,7 @@ module.exports = {
   },
 
   getAllMerchants: (req, res) => {
-    const { limit, offset, search, type, csv, xls } = req.query;
+    const { limit, offset, search, type, csv, xls, filter } = req.query;
     let total = `SELECT COUNT(*) as total FROM merchants M `;
 
     // Download CSV ?
@@ -141,6 +141,12 @@ module.exports = {
     } else if (search && type === "merchant_no") {
       sql += `WHERE M.merchant_no LIKE '%${search}%'`;
       total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_no LIKE '%${search}%'`;
+    } else if (filter === "eksisting") {
+      sql += `WHERE M.merchant_status = 'eksisting' AND EXISTS (SELECT * FROM billings B WHERE B.payment_term = 'booking_fee' AND B.merchant_id = M.merchant_no) `;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_status = 'eksisting'`;
+    } else if (filter === "bebas") {
+      sql += `WHERE M.merchant_status = 'bebas'`;
+      total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_status = 'bebas'`;
     }
 
     sql += `LIMIT ${Number(limit) || 20} OFFSET ${Number(offset) || 0};`;
