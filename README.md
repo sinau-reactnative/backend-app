@@ -46,6 +46,10 @@
 | `/api/v1/merchants/:merchant_no` | GET    | Get merchant by id    |                                                                                                                                                        |
 | `/api/v1/merchants/:merchant_no` | DELETE | DELETE merchant by id |                                                                                                                                                        |
 
+- params-download-billing-as-csv: csv(`true`)
+- params-download-billing-as-xls: xls(`true`)
+- params-summary: summary(`true`)
+
 ## /api/v1/billings
 
 | Endpoint               | HTTP   | Description             | Body                                                 |
