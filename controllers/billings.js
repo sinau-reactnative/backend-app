@@ -398,7 +398,7 @@ module.exports = {
 
   deleteBillingById: (req, res) => {
     const { id } = req.params;
-    const sql = `DELETE FROM billings WHERE id = ? ;`;
+    const sql = `UPDATE billings SET payment_status = "canceled" WHERE id = ? ;`;
 
     db.query(sql, [id], (err, result) => {
       if (err) {
