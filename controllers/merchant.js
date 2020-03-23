@@ -5,7 +5,7 @@ const AWS_LINK = process.env.AWS_LINK;
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
 const { merchantLogs } = require("../helpers/updateLogs");
-const { exportToExcel } = require("../helpers/export");
+const { exportMerchantToExcel } = require("../helpers/export");
 
 module.exports = {
   createMerchant: (req, res) => {
@@ -122,7 +122,9 @@ module.exports = {
     let _xls = xls ? (xls === "true" ? true : false) : false;
 
     let sql = `
-    SELECT *, T.name,
+    SELECT M.merchant_no,M.merchant_status, M.floor_position, M.type_of_sale, 
+           M.type_of_merchant, M.merchant_space, M.price_per_meter, M.total_price, M.attachment_1, M.attachment_2,
+           T.no_ktp, T.name, T.phone_number, T.address, T.place_of_birth, T.date_of_birth, T.ktp_scan,
            (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no AND payment_status="sudah_validasi") AS income_nominal,
            ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no AND payment_status="sudah_validasi") / (M.total_price)) * 100),2) as income_progress,
            (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no AND payment_status="outstanding") AS outstanding_nominal,
@@ -182,7 +184,7 @@ module.exports = {
           );
           stringify(result[0], { header: true }).pipe(res);
         } else if (_xls) {
-          exportToExcel(res, result[0]);
+          exportMerchantToExcel(res, result[0]);
         } else {
           sendResponse(res, 200, { result: result[0], pagination });
         }
@@ -200,7 +202,7 @@ module.exports = {
     const { summary } = req.query;
 
     let sql = `
-    SELECT *, T.name,
+    SELECT M.*, T.name,
            (SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) AS progress_nominal,
            ROUND((((SELECT SUM(B.nominal) FROM billings B WHERE B.merchant_id = M.merchant_no) / (M.total_price)) * 100),2) as progress_billing
            FROM merchants M
