@@ -6,7 +6,7 @@ const AWS_LINK = process.env.AWS_LINK;
 const { sendResponse } = require("../helpers/response");
 const { uploadFile } = require("../helpers/upload");
 const { billingLogs } = require("../helpers/updateLogs");
-const { exportToExcel } = require("../helpers/export");
+const { exportBillingToExcel } = require("../helpers/export");
 
 module.exports = {
   createBilling: (req, res) => {
@@ -204,7 +204,7 @@ module.exports = {
           );
           stringify(result[0], { header: true }).pipe(res);
         } else if (_xls) {
-          exportToExcel(res, result[0]);
+          exportBillingToExcel(res, result[0]);
         } else {
           sendResponse(res, 200, { result: result[0], pagination });
         }
