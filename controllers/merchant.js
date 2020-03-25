@@ -2,10 +2,10 @@ const db = require("../configs/db")
 const stringify = require("csv-stringify")
 const AWS_LINK = process.env.AWS_LINK
 
-const { sendResponse } = require("../helpers/response");
-const { uploadFile } = require("../helpers/upload");
-const { merchantLogs } = require("../helpers/updateLogs");
-const { exportMerchantToExcel } = require("../helpers/export");
+const { sendResponse } = require("../helpers/response")
+const { uploadFile } = require("../helpers/upload")
+const { merchantLogs } = require("../helpers/updateLogs")
+const { exportMerchantToExcel } = require("../helpers/export")
 
 module.exports = {
   createMerchant: (req, res) => {
@@ -116,7 +116,7 @@ module.exports = {
   getAllMerchants: (req, res) => {
     const { limit, offset, search, type, csv, xls, filter } = req.query
     let total = `SELECT COUNT(*) as total FROM merchants M `
-    let totalEksisting = `SELECT COUNT(*) as total FROM merchants M WHERE M.merchant_status = 'eksisting' AND EXISTS (SELECT * FROM billings B WHERE B.payment_term = 'booking_fee' AND B.merchant_id = M.merchant_no)`
+    let totalEksisting = `SELECT COUNT(*) as total FROM merchants M WHERE M.merchant_status = 'eksisting' AND EXISTS (SELECT * FROM billings B WHERE B.payment_term = 'booking_fee' AND B.payment_status = 'sudah_validasi' AND B.merchant_id = M.merchant_no)`
     let totalBebas = `SELECT COUNT(*) as total FROM merchants M WHERE M.merchant_status = 'bebas'`
 
     // Download CSV ?
@@ -146,7 +146,7 @@ module.exports = {
       sql += `WHERE M.merchant_no LIKE '%${search}%'`
       total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_no LIKE '%${search}%'`
     } else if (filter === "eksisting") {
-      sql += `WHERE M.merchant_status = 'eksisting' AND EXISTS (SELECT * FROM billings B WHERE B.payment_term = 'booking_fee' AND B.merchant_id = M.merchant_no) `
+      sql += `WHERE M.merchant_status = 'eksisting' AND EXISTS (SELECT * FROM billings B WHERE B.payment_term = 'booking_fee' AND B.payment_status = 'sudah_validasi' AND B.merchant_id = M.merchant_no) `
       total += `JOIN tenants T ON M.tenant_id = T.no_ktp WHERE M.merchant_status = 'eksisting'`
     } else if (filter === "bebas") {
       sql += `WHERE M.merchant_status = 'bebas'`
@@ -206,7 +206,7 @@ module.exports = {
           )
           stringify(result[0], { header: true }).pipe(res)
         } else if (_xls) {
-          exportMerchantToExcel(res, result[0]);
+          exportMerchantToExcel(res, result[0])
         } else {
           sendResponse(res, 200, {
             result: result[0],
