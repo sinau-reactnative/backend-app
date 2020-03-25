@@ -148,7 +148,7 @@ module.exports = {
     } else if (start_date && end_date && type === "summary") {
       sql = `
         SELECT *, 
-        (SELECT SUM(nominal) FROM billings WHERE due_date BETWEEN DATE('${start_date}') AND DATE('${end_date}')) as TOTAL
+        (SELECT SUM(nominal) FROM billings WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status="sudah_validasi") as TOTAL
         FROM billings
         WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = "sudah_validasi" `;
       total += `WHERE updated_at BETWEEN DATE('${start_date}') AND DATE('${end_date}') AND payment_status = "sudah_validasi" `;
