@@ -72,7 +72,7 @@ CREATE TABLE billings (
     payment_term varchar(50),
     due_date date,
     nominal varchar(10),
-    payment_status enum('menunggu_validasi', 'sudah_validasi', 'canceled', 'outstanding'),
+    payment_status enum('menunggu_pembayaran', 'menunggu_validasi', 'sudah_validasi', 'canceled', 'outstanding'),
     payment_proof varchar(250),
     receipt varchar(250),
     created_at timestamp DEFAULT current_timestamp,
@@ -135,10 +135,10 @@ CREATE TABLE images (
 `;
 
 const createUser = new Promise((resolve, reject) => {
-  db.query(createUserTable, err => {
+  db.query(createUserTable, (err) => {
     if (err) reject(err);
     else {
-      db.query(firstUserCreated, err => {
+      db.query(firstUserCreated, (err) => {
         if (err) reject(err);
         else resolve("User Table Created");
       });
@@ -147,49 +147,49 @@ const createUser = new Promise((resolve, reject) => {
 });
 
 const createTenant = new Promise((resolve, reject) => {
-  db.query(createTenantTable, err => {
+  db.query(createTenantTable, (err) => {
     if (err) reject(err);
     else resolve("Tenant Table Created");
   });
 });
 
 const createMerchant = new Promise((resolve, reject) => {
-  db.query(createMerchantTable, err => {
+  db.query(createMerchantTable, (err) => {
     if (err) reject(err);
     else resolve("Merchant Table Created");
   });
 });
 
 const createBilling = new Promise((resolve, reject) => {
-  db.query(createBillingTable, err => {
+  db.query(createBillingTable, (err) => {
     if (err) reject(err);
     else resolve("Billing Table Created");
   });
 });
 
 const createTenantLogs = new Promise((resolve, reject) => {
-  db.query(createTenantLogsTable, err => {
+  db.query(createTenantLogsTable, (err) => {
     if (err) reject(err);
     else resolve("Logs Table Created");
   });
 });
 
 const createMerchantsLogs = new Promise((resolve, reject) => {
-  db.query(createMerchantLogsTable, err => {
+  db.query(createMerchantLogsTable, (err) => {
     if (err) reject(err);
     else resolve("Logs Table Created");
   });
 });
 
 const createBillingLogs = new Promise((resolve, reject) => {
-  db.query(createBillingLogsTable, err => {
+  db.query(createBillingLogsTable, (err) => {
     if (err) reject(err);
     else resolve("Logs Table Created");
   });
 });
 
 const createImage = new Promise((resolve, reject) => {
-  db.query(createImageTable, err => {
+  db.query(createImageTable, (err) => {
     if (err) reject(err);
     else resolve("Image Table Created");
   });
@@ -203,7 +203,7 @@ Promise.all([
   createImage,
   createTenantLogs,
   createMerchantsLogs,
-  createBillingLogs
-]).then(result => {
-  result.map(i => console.log(i));
+  createBillingLogs,
+]).then((result) => {
+  result.map((i) => console.log(i));
 });

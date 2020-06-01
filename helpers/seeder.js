@@ -102,45 +102,56 @@ INSERT INTO billings VALUES
     NULL,
     'AB30200501',
     'Booking Fee',
-    '2020-02-22',
+    '2020-06-22',
     '1000000',
-    'menunggu_validasi',
-    'http://link-ke-payment-proof',
+    'menunggu_pembayaran',
+    '',
     '',
     DEFAULT,
     DEFAULT
 ),(
+  NULL,
+  'AB30200501',
+  'Pembayaran 1',
+  '2020-07-11',
+  '30000',
+  'menunggu_validasi',
+  'http://link-ke-payment-proof',
+  '',
+  DATE('2020-07-11'),
+  DEFAULT
+),(
     NULL,
     'AB30200501',
-    'Pembayaran 1',
-    '2020-01-21',
+    'Pembayaran 2',
+    '2020-07-22',
     '30000',
     'sudah_validasi',
     'http://link-ke-payment-proof',
     'http://link-ke-kwitansi',
-    DATE('2020-02-24'),
+    DATE('2020-07-22'),
     DEFAULT
 ),(
     NULL,
     'AB20100102',
     'Booking Fee',
-    '2020-02-21',
+    '2020-07-21',
     '30000',
     'sudah_validasi',
     'http://link-ke-payment-proof',
     'http://link-ke-kwitansi',
-    DATE('2020-02-25'),
+    DATE('2020-07-21'),
     DEFAULT
 ),(
     NULL,
     'AB20100102',
     'Pembayaran 2',
-    '2020-03-01',
+    '2020-07-01',
     '350000',
     'sudah_validasi',
     'http://link-ke-payment-proof',
     'http://link-ke-kwitansi',
-    DATE('2020-02-21'),
+    DATE('2020-07-01'),
     DEFAULT
 ),(
   NULL,
@@ -168,26 +179,26 @@ INSERT INTO billings VALUES
 `;
 
 const seederTenant = new Promise((resolve, reject) => {
-  db.query(sqlTenant, err => {
+  db.query(sqlTenant, (err) => {
     if (err) reject(err);
     else resolve("Tenant Seeders Inserted");
   });
 });
 
 const seederMerchant = new Promise((resolve, reject) => {
-  db.query(sqlMerchant, err => {
+  db.query(sqlMerchant, (err) => {
     if (err) reject(err);
     else resolve("Merchant Seeders Inserted");
   });
 });
 
 const seederBilling = new Promise((resolve, reject) => {
-  db.query(sqlBilling, err => {
+  db.query(sqlBilling, (err) => {
     if (err) reject(err);
     else resolve("Billing Seeders Inserted");
   });
 });
 
-Promise.all([seederTenant, seederMerchant, seederBilling]).then(result => {
-  result.map(i => console.log(i));
+Promise.all([seederTenant, seederMerchant, seederBilling]).then((result) => {
+  result.map((i) => console.log(i));
 });
