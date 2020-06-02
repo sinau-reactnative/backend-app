@@ -39,8 +39,10 @@ module.exports = {
 
     if (payment_proof && receipt) {
       payment_status = "sudah_validasi";
-    } else {
+    } else if (payment_proof || receipt) {
       payment_status = "menunggu_validasi";
+    } else {
+      payment_status = "menunggu_pembayaran"
     }
 
     const sql = `
