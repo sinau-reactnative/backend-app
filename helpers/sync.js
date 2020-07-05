@@ -8,7 +8,7 @@ CREATE TABLE users (
     email varchar(30) UNIQUE,
     username varchar(25),
     password varchar(250),
-    role enum('admin', 'superadmin', 'user'),
+    role enum('superadmin', 'admin_marketing', 'admin_keuangan', 'viewer'),
     address varchar(100),
     created_at timestamp DEFAULT current_timestamp,
     updated_at timestamp DEFAULT current_timestamp
